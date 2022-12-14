@@ -30,8 +30,7 @@ import kotlin.math.roundToInt
 @AndroidEntryPoint
 class NewsFragment : Fragment() {
 
-    private var _binding: FragmentNewsBinding? = null
-    private val binding get() = _binding!!
+    private lateinit var binding: FragmentNewsBinding
     private lateinit var breakingNewsAdapter: BreakingNewsAdapter
     private lateinit var categoryNewsAdapter: CategoryNewsAdapter
     private lateinit var newsViewModel: NewsViewModel
@@ -45,7 +44,7 @@ class NewsFragment : Fragment() {
     ): View {
         newsViewModel =
             ViewModelProvider(this)[NewsViewModel::class.java]
-        _binding = FragmentNewsBinding.inflate(inflater, container, false)
+        binding = FragmentNewsBinding.inflate(inflater, container, false)
 
         setUpBreakingNewsRv()
         setUpCategoryNewsRv()
@@ -88,14 +87,18 @@ class NewsFragment : Fragment() {
                     is Resource.Error -> {
                         Log.e(TAG, response.message!!)
                         withContext(Dispatchers.Main) {
+                            binding.progressBar.visibility = View.GONE
                             Toast.makeText(requireContext(), response.message, Toast.LENGTH_SHORT)
                                 .show()
                         }
                     }
-                    is Resource.Loading -> {}
+                    is Resource.Loading -> {
+                        binding.progressBar.visibility = View.VISIBLE
+                    }
                     is Resource.Success -> {
                         Log.d(TAG, "category news are: ${response.data!!.size}")
                         withContext(Dispatchers.Main) {
+                            binding.progressBar.visibility = View.GONE
                             categoryNewsAdapter.differ.submitList(response.data.toList())
                         }
                     }
@@ -109,11 +112,6 @@ class NewsFragment : Fragment() {
         }
 
         return binding.root
-    }
-
-    override fun onDestroyView() {
-        super.onDestroyView()
-        _binding = null
     }
 
     private fun setUpBreakingNewsRv() {

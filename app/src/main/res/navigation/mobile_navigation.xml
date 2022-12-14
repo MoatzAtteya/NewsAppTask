@@ -22,4 +22,9 @@
         android:name="com.example.newsapptask.presentation.saved_news_page.ui.SavedNewsFragment"
         android:label="Saved News"
         tools:layout="@layout/fragment_saved_news" />
+    <fragment
+        android:id="@+id/navigation_setting"
+        android:name="com.example.newsapptask.presentation.setting_page.ui.SettingFragment"
+        android:label="fragment_setting"
+        tools:layout="@layout/fragment_setting" />
 </navigation>

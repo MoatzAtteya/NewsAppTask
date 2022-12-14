@@ -1,43 +1,148 @@
 package com.example.newsapptask.presentation.search_page.ui
 
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
+import android.widget.Toast
+import androidx.appcompat.widget.SearchView
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
+import androidx.recyclerview.widget.LinearLayoutManager
+import com.example.newsapptask.common.Resource
 import com.example.newsapptask.databinding.FragmentSearchBinding
+import com.example.newsapptask.domain.model.Article
+import com.example.newsapptask.presentation.news_page.adapter.CategoryNewsAdapter
+import com.example.newsapptask.presentation.news_page.ui.NewsFragment
+import com.example.newsapptask.presentation.search_page.adapter.SearchedNewsAdapter
 import com.example.newsapptask.presentation.search_page.viewmodel.SearchViewModel
+import com.google.android.material.snackbar.Snackbar
+import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.*
+import kotlinx.coroutines.flow.collect
 
-class SearchFragment : Fragment() {
+@AndroidEntryPoint
+class SearchFragment : Fragment(), SearchView.OnQueryTextListener {
 
-    private var _binding: FragmentSearchBinding? = null
-
-    // This property is only valid between onCreateView and
-    // onDestroyView.
-    private val binding get() = _binding!!
+    private lateinit var binding: FragmentSearchBinding
+    private lateinit var searchViewModel: SearchViewModel
+    private lateinit var searchNewsAdapter: SearchedNewsAdapter
+    private var articleID: Long = 0
 
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        val searchViewModel =
-            ViewModelProvider(this).get(SearchViewModel::class.java)
+        searchViewModel = ViewModelProvider(this)[SearchViewModel::class.java]
 
-        _binding = FragmentSearchBinding.inflate(inflater, container, false)
-        val root: View = binding.root
+        binding = FragmentSearchBinding.inflate(inflater, container, false)
+        setUpSearchNewsRv()
 
-        val textView: TextView = binding.textDashboard
-        searchViewModel.text.observe(viewLifecycleOwner) {
-            textView.text = it
-        }
-        return root
+        binding.svNewsSearch.setOnQueryTextListener(this)
+
+
+        return binding.root
     }
 
-    override fun onDestroyView() {
-        super.onDestroyView()
-        _binding = null
+    override fun onQueryTextSubmit(query: String?): Boolean {
+        GlobalScope.launch(Dispatchers.IO) {
+            if (!query.isNullOrEmpty()) {
+                searchViewModel.getAndReturnNews(favouriteCategories, query)
+                searchViewModel.getNewsResponse.collect { response ->
+                    when (response) {
+                        is Resource.Error -> {
+                            withContext(Dispatchers.Main) {
+                                binding.progressBar.visibility = View.GONE
+                                Log.e(TAG, response.message!!)
+                                Toast.makeText(
+                                    requireContext(),
+                                    response.message,
+                                    Toast.LENGTH_SHORT
+                                ).show()
+                            }
+                        }
+                        is Resource.Loading -> {
+                            withContext(Dispatchers.Main){
+                                binding.progressBar.visibility = View.VISIBLE
+                            }
+                        }
+                        is Resource.Success -> {
+                            Log.d(TAG, "search news size: ${response.data!!.size}")
+                            withContext(Dispatchers.Main) {
+                                binding.progressBar.visibility = View.GONE
+                                searchNewsAdapter.setArticlesList(mutableListOf())
+                                searchNewsAdapter.setArticlesList(response.data as MutableList<Article>)
+                                searchNewsAdapter.notifyDataSetChanged()
+                            }
+                        }
+                    }
+                }
+            }else{
+                searchNewsAdapter.setArticlesList(mutableListOf())
+                searchNewsAdapter.notifyDataSetChanged()
+            }
+        }
+        return false
+    }
+
+    override fun onQueryTextChange(newText: String?): Boolean {
+        return false
+    }
+
+    private fun setUpSearchNewsRv() {
+        searchNewsAdapter = SearchedNewsAdapter(this)
+        binding.rvSearchedNews.apply {
+            adapter = searchNewsAdapter
+            layoutManager = LinearLayoutManager(requireContext())
+        }
+        searchNewsAdapter.setOnItemClickListener(object : SearchedNewsAdapter.OnItemClickListener {
+            override fun onLikeClicked(position: Int, article: Article) {
+                GlobalScope.launch(Dispatchers.IO) {
+                    searchViewModel.saveArticle(article)
+                    searchViewModel.saveArticleResponse.collect { response ->
+                        when (response) {
+                            is Resource.Error -> {
+                                Log.e(TAG, response.message!!.toString())
+                                withContext(Dispatchers.Main) {
+                                    Toast.makeText(
+                                        requireContext(),
+                                        "Something wrong happen!",
+                                        Toast.LENGTH_SHORT
+                                    ).show()
+                                }
+                            }
+                            is Resource.Loading -> {}
+                            is Resource.Success -> {
+                                articleID = response.data!!
+                                if (articleID == -1L) {
+                                    createSnackBar("Article already saved before!").show()
+                                } else {
+                                    createSnackBar("Article Saved Successfully.").setAction("Undo") {
+                                        createSnackBar("Article removed successfully.").show()
+                                        searchViewModel.deleteArticle(articleID)
+                                    }.show()
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        })
+    }
+
+    private fun createSnackBar(msg: String): Snackbar {
+        return Snackbar.make(
+            requireActivity().findViewById(android.R.id.content),
+            msg,
+            Snackbar.LENGTH_SHORT
+        )
+    }
+
+    companion object {
+        var favouriteCategories = arrayListOf("sport", "health", "science")
+        private const val TAG = "SearchFragment"
     }
 }

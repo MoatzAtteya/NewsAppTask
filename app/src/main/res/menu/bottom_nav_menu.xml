@@ -16,4 +16,9 @@
         android:icon="@drawable/saved_news_menu_selector"
         android:title="@string/saved" />
 
+    <item
+        android:id="@+id/navigation_setting"
+        android:icon="@drawable/setting_menu_selector"
+        android:title="@string/setting" />
+
 </menu>

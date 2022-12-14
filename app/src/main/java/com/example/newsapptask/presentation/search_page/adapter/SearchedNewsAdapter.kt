@@ -1,4 +1,4 @@
-package com.example.newsapptask.presentation.news_page.adapter
+package com.example.newsapptask.presentation.search_page.adapter
 
 import android.content.Intent
 import android.view.LayoutInflater
@@ -9,28 +9,19 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.example.newsapptask.R
-import com.example.newsapptask.databinding.BreakingNewsItemBinding
+import com.example.newsapptask.databinding.CategoryNewsItemBinding
 import com.example.newsapptask.domain.model.Article
 import com.example.newsapptask.presentation.news_page.ui.NewsFragment
+import com.example.newsapptask.presentation.search_page.ui.SearchFragment
 
-class BreakingNewsAdapter(private val fragment: NewsFragment) :
+class SearchedNewsAdapter(private val fragment: SearchFragment) :
     RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
-
-    private val differCallback = object : DiffUtil.ItemCallback<Article>() {
-        override fun areItemsTheSame(oldItem: Article, newItem: Article): Boolean {
-            return oldItem.url == newItem.url
-        }
-
-        override fun areContentsTheSame(oldItem: Article, newItem: Article): Boolean {
-            return oldItem == newItem
-        }
-    }
-    val differ = AsyncListDiffer(this, differCallback)
-
+    private var articles = mutableListOf<Article>()
 
     interface OnItemClickListener {
         fun onLikeClicked(position: Int, article: Article)
+
     }
 
     private lateinit var mListener: OnItemClickListener
@@ -39,10 +30,11 @@ class BreakingNewsAdapter(private val fragment: NewsFragment) :
         mListener = listener
     }
 
+
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
-        return BreakingNewsViewHolder(
+        return CategoryNewsViewHolder(
             LayoutInflater.from(parent.context).inflate(
-                R.layout.breaking_news_item,
+                R.layout.category_news_item,
                 parent,
                 false
             )
@@ -50,19 +42,21 @@ class BreakingNewsAdapter(private val fragment: NewsFragment) :
     }
 
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
-        val article = differ.currentList[position]
-        if (holder is BreakingNewsViewHolder) {
+        val article = articles[position]
+        if (holder is CategoryNewsViewHolder) {
             holder.binding.apply {
                 Glide.with(fragment.requireContext())
-                    .load(article.urlToImage)
-                    .error(R.drawable.breaking_news_img)
-                    .placeholder(R.drawable.breaking_news_img)
+                    .load(article.urlToImage).error(R.drawable.breaking_news_img)
                     .into(ivArticleImage)
 
-                tvSource.text = article.source?.name
+                tvArticleTitle.text = article.title
+                tvAuthor.text = article.source?.name
                 tvDescription.text = article.title
-                tvPublishedAt.text = article.publishedAt
+                tvDatePublished.text = article.publishedAt
 
+                likeIv.setOnClickListener {
+                    mListener.onLikeClicked(position, article)
+                }
                 shareIv.setOnClickListener {
                     val intent = Intent().apply {
                         type = "text/plain"
@@ -72,22 +66,19 @@ class BreakingNewsAdapter(private val fragment: NewsFragment) :
                     val shareIntent = Intent.createChooser(intent, "Share Article")
                     fragment.requireContext().startActivity(shareIntent)
                 }
-
-                likeIv.setOnClickListener {
-                    mListener.onLikeClicked(position, article)
-
-
-                }
             }
         }
     }
 
     override fun getItemCount(): Int {
-        return differ.currentList.size
+        return articles.size
     }
 
+    fun setArticlesList(articles : MutableList<Article>){
+        this.articles = articles
+    }
 
-    private class BreakingNewsViewHolder(view: View) : RecyclerView.ViewHolder(view) {
-        val binding = BreakingNewsItemBinding.bind(view)
+    private class CategoryNewsViewHolder(view: View) : RecyclerView.ViewHolder(view) {
+        val binding = CategoryNewsItemBinding.bind(view)
     }
 }

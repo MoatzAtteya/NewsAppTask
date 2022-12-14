@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    tools:context=".presentation.setting_page.ui.SettingFragment">
+
+    <TextView
+        android:id="@+id/tvTitleSetting"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/setting"
+        android:textSize="@dimen/_20sdp"
+        android:fontFamily="@font/open_sans_bold"
+        android:textColor="?colorOnSecondary"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        android:layout_margin="@dimen/_10sdp"/>
+
+    <TextView
+        android:id="@+id/tvTitleSelectedCountry"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/selected_country"
+        android:textSize="@dimen/_15sdp"
+        android:fontFamily="@font/open_sans_semibold"
+        android:textColor="?colorOnSecondary"
+        app:layout_constraintTop_toBottomOf="@+id/tvTitleSetting"
+        app:layout_constraintStart_toStartOf="parent"
+        android:layout_margin="@dimen/_10sdp"/>
+
+    <TextView
+        android:id="@+id/tvSelectedCountry"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        tools:text="EG"
+        android:textSize="@dimen/_14sdp"
+        android:fontFamily="@font/open_sans_semibold"
+        android:textColor="?colorOnSecondary"
+        app:layout_constraintTop_toBottomOf="@+id/tvTitleSetting"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_margin="@dimen/_10sdp"/>
+
+    <TextView
+        android:id="@+id/tvTitleFavCategory"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/favourite_categories"
+        android:textSize="@dimen/_14sdp"
+        android:fontFamily="@font/open_sans_semibold"
+        android:textColor="?colorOnSecondary"
+        app:layout_constraintTop_toBottomOf="@+id/tvTitleSelectedCountry"
+        app:layout_constraintStart_toStartOf="parent"
+        android:layout_margin="@dimen/_10sdp"/>
+
+    <TextView
+        android:id="@+id/tvViewFavCategory"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="View"
+        android:textSize="@dimen/_14sdp"
+        android:fontFamily="@font/open_sans_semibold"
+        android:textColor="@color/purple_500"
+        app:layout_constraintTop_toBottomOf="@+id/tvTitleSelectedCountry"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_margin="@dimen/_10sdp"/>
+
+    <TextView
+        android:id="@+id/tvFavCategory"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        tools:text="sports - health - environment"
+        android:textSize="@dimen/_13sdp"
+        android:fontFamily="@font/open_sans"
+        android:textColor="?colorOnSecondary"
+        app:layout_constraintTop_toBottomOf="@+id/tvTitleFavCategory"
+        app:layout_constraintStart_toStartOf="parent"
+        android:layout_margin="@dimen/_10sdp"
+        android:visibility="gone"/>
+
+
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>

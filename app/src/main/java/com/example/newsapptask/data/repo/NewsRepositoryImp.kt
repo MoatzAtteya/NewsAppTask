@@ -11,8 +11,8 @@ class NewsRepositoryImp @Inject constructor(private val api: NewsApi) : NewsRepo
         return api.getBreakingNews(countryCode, pageNumber)
     }
 
-    override suspend fun searchNews(searchQuery: String, pageNumber: Int): NewsResponse {
-        return api.searchForNews(searchQuery, pageNumber)
+    override suspend fun searchNews(searchQuery: String, pageNumber: Int , category: String): NewsResponse {
+        return api.searchForNews(searchQuery, pageNumber ,category)
     }
 
     override suspend fun getNewsByCategory(countryCode: String, category: String): NewsResponse {

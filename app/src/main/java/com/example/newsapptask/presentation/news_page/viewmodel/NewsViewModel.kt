@@ -73,8 +73,9 @@ class NewsViewModel @Inject constructor(
 
         getCategoryNewsUseCase.invoke(country, category).collect { response ->
             when (response) {
-                is Resource.Error -> getCategoryNewsResponse.value = Resource.Error(response.message!!)
+                is Resource.Error -> _getCategoryNewsResponse.value = Resource.Error(response.message!!)
                 is Resource.Loading -> {
+                    _getCategoryNewsResponse.value = Resource.Loading()
                 }
                 is Resource.Success -> {
                    /* breakingNewsPage++
@@ -88,7 +89,7 @@ class NewsViewModel @Inject constructor(
                     categoryArticles.addAll(response.data!!.articles)
                     count--
                     if (count == 0)
-                        getCategoryNewsResponse.value = Resource.Success(categoryArticles)
+                        _getCategoryNewsResponse.value = Resource.Success(categoryArticles)
                 }
             }
         }

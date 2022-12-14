@@ -3,6 +3,7 @@ package com.example.newsapptask
 import android.os.Bundle
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.app.AppCompatDelegate
 import androidx.navigation.findNavController
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.setupActionBarWithNavController
@@ -28,7 +29,7 @@ class MainActivity : AppCompatActivity() {
         // menu should be considered as top level destinations.
         val appBarConfiguration = AppBarConfiguration(
             setOf(
-                R.id.navigation_news, R.id.navigation_search, R.id.navigation_saved_news
+                R.id.navigation_news, R.id.navigation_search, R.id.navigation_saved_news , R.id.navigation_setting
             )
         )
         setupActionBarWithNavController(navController, appBarConfiguration)
