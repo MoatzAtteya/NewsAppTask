@@ -17,10 +17,20 @@
             android:layout_margin="@dimen/_10sdp"
             android:fontFamily="@font/noticia_text"
             android:text="@string/breaking_news"
-            android:textSize="@dimen/_19sdp"
             android:textColor="?colorOnSecondary"
+            android:textSize="@dimen/_19sdp"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
+
+        <ImageView
+            android:id="@+id/ivSortBy"
+            android:layout_width="@dimen/_18sdp"
+            android:layout_height="@dimen/_18sdp"
+            android:layout_margin= "@dimen/_13sdp"
+            android:src="@drawable/list_24"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:tint="?colorOnSecondary" />
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/breaking_news_rv"
@@ -39,8 +49,8 @@
             android:layout_margin="@dimen/_10sdp"
             android:fontFamily="@font/noticia_text"
             android:text="@string/general_news"
-            android:textSize="@dimen/_17sdp"
             android:textColor="?colorOnSecondary"
+            android:textSize="@dimen/_17sdp"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/breaking_news_rv" />
 

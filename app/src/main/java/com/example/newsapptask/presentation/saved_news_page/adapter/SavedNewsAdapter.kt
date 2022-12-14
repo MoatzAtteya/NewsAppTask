@@ -1,4 +1,4 @@
-package com.example.newsapptask.presentation.news_page.adapter
+package com.example.newsapptask.presentation.saved_news_page.adapter
 
 import android.content.Intent
 import android.view.LayoutInflater
@@ -10,11 +10,13 @@ import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.example.newsapptask.R
 import com.example.newsapptask.databinding.CategoryNewsItemBinding
+import com.example.newsapptask.databinding.SavedNewsItemBinding
 import com.example.newsapptask.domain.model.Article
 import com.example.newsapptask.presentation.news_page.ui.NewsFragment
+import com.example.newsapptask.presentation.saved_news_page.ui.SavedNewsFragment
 
-class CategoryNewsAdapter(private val fragment: NewsFragment) :
-    RecyclerView.Adapter<RecyclerView.ViewHolder>() {
+class SavedNewsAdapter(private val fragment: SavedNewsFragment) :
+    RecyclerView.Adapter<RecyclerView.ViewHolder>()  {
 
     private val differCallback = object : DiffUtil.ItemCallback<Article>() {
         override fun areItemsTheSame(oldItem: Article, newItem: Article): Boolean {
@@ -28,22 +30,10 @@ class CategoryNewsAdapter(private val fragment: NewsFragment) :
 
     val differ = AsyncListDiffer(this, differCallback)
 
-    interface OnItemClickListener {
-        fun onLikeClicked(position: Int, article: Article)
-
-    }
-
-    private lateinit var mListener: OnItemClickListener
-
-    fun setOnItemClickListener(listener: OnItemClickListener) {
-        mListener = listener
-    }
-
-
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
-        return CategoryNewsViewHolder(
+        return SavedNewsViewHolder(
             LayoutInflater.from(parent.context).inflate(
-                R.layout.category_news_item,
+                R.layout.saved_news_item,
                 parent,
                 false
             )
@@ -52,7 +42,7 @@ class CategoryNewsAdapter(private val fragment: NewsFragment) :
 
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
         val article = differ.currentList[position]
-        if (holder is CategoryNewsViewHolder) {
+        if (holder is SavedNewsViewHolder){
             holder.binding.apply {
                 Glide.with(fragment.requireContext())
                     .load(article.urlToImage).error(R.drawable.breaking_news_img)
@@ -63,18 +53,16 @@ class CategoryNewsAdapter(private val fragment: NewsFragment) :
                 tvDescription.text = article.title
                 tvDatePublished.text = article.publishedAt
 
-                likeIv.setOnClickListener {
-                    mListener.onLikeClicked(position, article)
-                }
                 shareIv.setOnClickListener {
                     val intent = Intent().apply {
                         type = "text/plain"
                         action = Intent.ACTION_SEND
-                        putExtra(Intent.EXTRA_TEXT, article.url)
+                        putExtra(Intent.EXTRA_TEXT , article.url)
                     }
-                    val shareIntent = Intent.createChooser(intent, "Share Article")
+                    val shareIntent = Intent.createChooser(intent , "Share Article")
                     fragment.requireContext().startActivity(shareIntent)
                 }
+
             }
         }
     }
@@ -83,7 +71,7 @@ class CategoryNewsAdapter(private val fragment: NewsFragment) :
         return differ.currentList.size
     }
 
-    private class CategoryNewsViewHolder(view: View) : RecyclerView.ViewHolder(view) {
-        val binding = CategoryNewsItemBinding.bind(view)
+    private class SavedNewsViewHolder(view: View) : RecyclerView.ViewHolder(view) {
+        val binding = SavedNewsItemBinding.bind(view)
     }
 }

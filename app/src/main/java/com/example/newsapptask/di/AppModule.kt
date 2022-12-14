@@ -3,9 +3,12 @@ package com.example.newsapptask.di
 import android.content.Context
 import androidx.room.Room
 import com.example.newsapptask.common.Constants
+import com.example.newsapptask.data.dao.NewsDao
 import com.example.newsapptask.data.remote.NewsApi
 import com.example.newsapptask.data.remote.NewsDatabase
+import com.example.newsapptask.data.repo.NewsDBRepositoryImp
 import com.example.newsapptask.data.repo.NewsRepositoryImp
+import com.example.newsapptask.domain.repo.NewsDBRepository
 import com.example.newsapptask.domain.repo.NewsRepository
 import dagger.Module
 import dagger.Provides
@@ -23,7 +26,7 @@ import javax.inject.Singleton
 object AppModule {
     @Provides
     @Singleton
-    fun provideNewsApi() : NewsApi{
+    fun provideNewsApi(): NewsApi {
         val logger = HttpLoggingInterceptor().setLevel(HttpLoggingInterceptor.Level.BODY)
         val okHttpClient = OkHttpClient.Builder().addInterceptor(logger)
 
@@ -37,7 +40,7 @@ object AppModule {
 
     @Provides
     @Singleton
-    fun provideNewsRepository(api: NewsApi) : NewsRepository{
+    fun provideNewsRepository(api: NewsApi): NewsRepository {
         return NewsRepositoryImp(api)
     }
 
@@ -51,5 +54,16 @@ object AppModule {
         ).allowMainThreadQueries().build()
     }
 
+    @Provides
+    @Singleton
+    fun providesNewsDao(appDatabase: NewsDatabase): NewsDao {
+        return appDatabase.newsDao()
+    }
 
+    @Provides
+    @Singleton
+    fun provideNewsDBRepository(newsDao: NewsDao): NewsDBRepository {
+        return NewsDBRepositoryImp(newsDao)
+
+    }
 }

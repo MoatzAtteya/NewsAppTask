@@ -12,11 +12,11 @@ import javax.inject.Inject
 
 class GetCategoryNewsUseCase @Inject constructor(private val repository: NewsRepository) {
 
-    fun invoke(countryCode: String,category : String): Flow<Resource<List<Article>>> = flow {
+    fun invoke(countryCode: String,category : String): Flow<Resource<NewsResponse>> = flow {
         try {
             val newsResponse = repository.getNewsByCategory(countryCode, category)
             if (newsResponse.status == "ok")
-                emit(Resource.Success(newsResponse.articles))
+                emit(Resource.Success(newsResponse))
             else
                 emit(Resource.Error("An unexpected error occurred."))
 

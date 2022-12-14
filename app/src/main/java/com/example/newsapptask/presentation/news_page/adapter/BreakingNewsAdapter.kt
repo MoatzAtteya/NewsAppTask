@@ -17,9 +17,6 @@ class BreakingNewsAdapter(private val fragment: NewsFragment) :
     RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
 
-    var isLikeClicked = false
-
-
     private val differCallback = object : DiffUtil.ItemCallback<Article>() {
         override fun areItemsTheSame(oldItem: Article, newItem: Article): Boolean {
             return oldItem.url == newItem.url
@@ -29,8 +26,18 @@ class BreakingNewsAdapter(private val fragment: NewsFragment) :
             return oldItem == newItem
         }
     }
-
     val differ = AsyncListDiffer(this, differCallback)
+
+
+    interface OnItemClickListener {
+        fun onLikeClicked(position: Int, article: Article)
+    }
+
+    private lateinit var mListener: OnItemClickListener
+
+    fun setOnItemClickListener(listener: OnItemClickListener) {
+        mListener = listener
+    }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
         return BreakingNewsViewHolder(
@@ -58,10 +65,16 @@ class BreakingNewsAdapter(private val fragment: NewsFragment) :
                     val intent = Intent().apply {
                         type = "text/plain"
                         action = Intent.ACTION_SEND
-                        putExtra(Intent.EXTRA_TEXT , article.url)
+                        putExtra(Intent.EXTRA_TEXT, article.url)
                     }
-                    val shareIntent = Intent.createChooser(intent , "Share Article")
+                    val shareIntent = Intent.createChooser(intent, "Share Article")
                     fragment.requireContext().startActivity(shareIntent)
+                }
+
+                likeIv.setOnClickListener {
+                    mListener.onLikeClicked(position, article)
+
+
                 }
             }
         }
