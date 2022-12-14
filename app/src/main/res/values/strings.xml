@@ -3,4 +3,9 @@
     <string name="title_home">Home</string>
     <string name="title_dashboard">Dashboard</string>
     <string name="title_notifications">Notifications</string>
+    <string name="breaking_news">Breaking News</string>
+    <string name="general_news">You May like</string>
+    <string name="breaking_news_title">this is title one for the first breaking news article item to test the width of the textview</string>
+    <string name="author_name">www.google.com</string>
+    <string name="news_title">news title 1</string>
 </resources>
