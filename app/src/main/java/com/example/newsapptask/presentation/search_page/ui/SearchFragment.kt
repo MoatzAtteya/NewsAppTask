@@ -8,12 +8,14 @@ import android.view.ViewGroup
 import android.widget.Toast
 import androidx.appcompat.widget.SearchView
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.viewModels
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.newsapptask.common.Constants
 import com.example.newsapptask.common.Resource
 import com.example.newsapptask.databinding.FragmentSearchBinding
 import com.example.newsapptask.domain.model.Article
+import com.example.newsapptask.presentation.saved_news_page.ui.SavedNewsFragment
 import com.example.newsapptask.presentation.search_page.adapter.SearchedNewsAdapter
 import com.example.newsapptask.presentation.search_page.viewmodel.SearchViewModel
 import com.google.android.material.snackbar.Snackbar
@@ -24,7 +26,7 @@ import kotlinx.coroutines.*
 class SearchFragment : Fragment(), SearchView.OnQueryTextListener {
 
     private lateinit var binding: FragmentSearchBinding
-    private lateinit var searchViewModel: SearchViewModel
+    private val searchViewModel: SearchViewModel by viewModels()
     private lateinit var searchNewsAdapter: SearchedNewsAdapter
     private var articleID: Long = 0
     private var isFilterClicked = false
@@ -37,8 +39,6 @@ class SearchFragment : Fragment(), SearchView.OnQueryTextListener {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        searchViewModel = ViewModelProvider(this)[SearchViewModel::class.java]
-
         binding = FragmentSearchBinding.inflate(inflater, container, false)
         favouriteCategories = searchViewModel.getPreferencesCategories()!!
         setUpSearchNewsRv()
@@ -83,9 +83,9 @@ class SearchFragment : Fragment(), SearchView.OnQueryTextListener {
 
     override fun onQueryTextSubmit(query: String?): Boolean {
         GlobalScope.launch(Dispatchers.IO) {
-            if(searchCategory.isNotEmpty()){
+            if (searchCategory.isNotEmpty()) {
                 searchViewModel.getAndReturnNews(searchCategory, query!!)
-            }else{
+            } else {
                 searchViewModel.getAndReturnNews(favouriteCategories, query!!)
             }
             searchViewModel.getNewsResponse.collect { response ->
@@ -155,12 +155,23 @@ class SearchFragment : Fragment(), SearchView.OnQueryTextListener {
                             is Resource.Success -> {
                                 articleID = response.data!!
                                 if (articleID == -1L) {
-                                    createSnackBar("Article already saved before!").show()
+                                    // try and catch for not attached Exception.
+                                    try {
+                                        createSnackBar("Article already saved before!").show()
+                                    } catch (ex: Exception) {
+                                        Log.e(TAG, ex.message.toString())
+                                    }
                                 } else {
-                                    createSnackBar("Article Saved Successfully.").setAction("Undo") {
-                                        createSnackBar("Article removed successfully.").show()
-                                        searchViewModel.deleteArticle(articleID)
-                                    }.show()
+                                    // try and catch for not attached Exception.
+                                    try {
+                                        createSnackBar("Article Saved Successfully.").setAction("Undo") {
+                                            createSnackBar("Article removed successfully.").show()
+                                            article.id = articleID.toInt()
+                                            searchViewModel.deleteArticle(article)
+                                        }.show()
+                                    } catch (ex: Exception) {
+                                        Log.e(TAG, ex.message.toString())
+                                    }
                                 }
                             }
                         }

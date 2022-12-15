@@ -8,7 +8,7 @@ import javax.inject.Inject
 
 class NewsDBRepositoryImp @Inject constructor(val dao : NewsDao) : NewsDBRepository {
     override suspend fun saveArticleDB(article: Article)  : Long {
-       return dao.insertSavedArticles(article)
+       return dao.insertArticle(article)
     }
 
     override suspend fun deleteArticleDB(article: Article) {

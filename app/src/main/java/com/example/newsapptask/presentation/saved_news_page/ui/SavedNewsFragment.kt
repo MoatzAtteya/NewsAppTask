@@ -6,6 +6,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.viewModels
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -26,7 +27,7 @@ import kotlinx.coroutines.withContext
 class SavedNewsFragment : Fragment() {
 
     private lateinit var binding: FragmentSavedNewsBinding
-    private lateinit var savedNewsViewModel: SavedNewsViewModel
+    private  val savedNewsViewModel: SavedNewsViewModel by viewModels()
     private lateinit var savedNewsAdapter: SavedNewsAdapter
     private lateinit var article: Article
     private lateinit var articles: MutableList<Article>
@@ -36,12 +37,8 @@ class SavedNewsFragment : Fragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        savedNewsViewModel =
-            ViewModelProvider(this).get(SavedNewsViewModel::class.java)
-
         binding = FragmentSavedNewsBinding.inflate(inflater, container, false)
         setUpRecyclerView()
-
         GlobalScope.launch(Dispatchers.IO) {
             savedNewsViewModel.getSavedArticles()
             savedNewsViewModel.getSavedNewsResponse.collect { response ->
@@ -87,6 +84,7 @@ class SavedNewsFragment : Fragment() {
                             is Resource.Error -> Log.e(TAG, response.message!!)
                             is Resource.Loading -> {}
                             is Resource.Success -> {
+                                // try and catch for not attached Exception.
                                 try {
                                     Snackbar.make(
                                         requireActivity().findViewById(android.R.id.content),
@@ -94,6 +92,7 @@ class SavedNewsFragment : Fragment() {
                                         Snackbar.LENGTH_LONG
                                     ).apply {
                                         setAction("Undo") {
+                                            article.isSaved = true
                                             savedNewsViewModel.saveArticle(article)
                                         }
                                         show()

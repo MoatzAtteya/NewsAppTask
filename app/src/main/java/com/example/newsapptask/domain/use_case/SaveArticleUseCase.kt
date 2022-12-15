@@ -11,6 +11,7 @@ class SaveArticleUseCase @Inject constructor(private val repository: NewsDBRepos
 
     fun invoke(article: Article): Flow<Resource<Long>> = flow {
         try {
+            article.isSaved = true
             val articles = repository.getSavedArticlesByURL(article.url!!)
             if (articles.isNotEmpty()){
                 emit(Resource.Success(-1))

@@ -54,7 +54,7 @@ class NewsViewModel @Inject constructor(
     private var categoryArticles: MutableList<Article> = mutableListOf()
 
     init {
-       // getBreakingNews()
+        getBreakingNews()
        // getAndReturnCategoryNews()
     }
 
@@ -115,8 +115,8 @@ class NewsViewModel @Inject constructor(
         }
     }
 
-    fun deleteArticle(id: Long) = viewModelScope.launch {
-        deleteArticleUseCase.deleteArticleById(id).collect { response ->
+    fun deleteArticle(article: Article) = viewModelScope.launch {
+        deleteArticleUseCase.deleteArticleById(article).collect { response ->
             when (response) {
                 is Resource.Error -> {
                     Log.e(TAG, response.message!!)

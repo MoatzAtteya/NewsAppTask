@@ -7,6 +7,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.viewModels
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -33,7 +34,7 @@ class NewsFragment : Fragment() {
     private lateinit var binding: FragmentNewsBinding
     private lateinit var breakingNewsAdapter: BreakingNewsAdapter
     private lateinit var categoryNewsAdapter: CategoryNewsAdapter
-    private lateinit var newsViewModel: NewsViewModel
+    private val newsViewModel: NewsViewModel by viewModels()
     private var articleID: Long = 0
 
     override fun onCreateView(
@@ -41,8 +42,7 @@ class NewsFragment : Fragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        newsViewModel =
-            ViewModelProvider(this)[NewsViewModel::class.java]
+
         binding = FragmentNewsBinding.inflate(inflater, container, false)
 
         setUpBreakingNewsRv()
@@ -87,7 +87,9 @@ class NewsFragment : Fragment() {
                         }
                     }
                     is Resource.Loading -> {
-                        binding.progressBar.visibility = View.VISIBLE
+                        withContext(Dispatchers.Main){
+                            binding.progressBar.visibility = View.VISIBLE
+                        }
                     }
                     is Resource.Success -> {
                         Log.d(TAG, "category news are: ${response.data!!.size}")
@@ -139,7 +141,8 @@ class NewsFragment : Fragment() {
                                 } else {
                                     createSnackBar("Article Saved Successfully.").setAction("Undo") {
                                         createSnackBar("Article removed successfully.").show()
-                                        newsViewModel.deleteArticle(articleID)
+                                        article.id = articleID.toInt()
+                                        newsViewModel.deleteArticle(article)
                                     }.show()
                                 }
                             }
@@ -181,8 +184,8 @@ class NewsFragment : Fragment() {
                                 } else {
                                     createSnackBar("Article Saved Successfully.").setAction("Undo") {
                                         createSnackBar("Article removed successfully.").show()
-                                        newsViewModel.deleteArticle(articleID)
-                                    }.show()
+                                        article.id = articleID.toInt()
+                                        newsViewModel.deleteArticle(article)                                    }.show()
                                 }
                             }
                         }

@@ -1,10 +1,6 @@
 package com.example.newsapptask.data.dao
 
-import androidx.room.Dao
-import androidx.room.Delete
-import androidx.room.Insert
-import androidx.room.OnConflictStrategy
-import androidx.room.Query
+import androidx.room.*
 import com.example.newsapptask.domain.model.Article
 import kotlinx.coroutines.flow.Flow
 
@@ -12,10 +8,10 @@ import kotlinx.coroutines.flow.Flow
 interface NewsDao {
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insertSavedArticles(article: Article) : Long
+    suspend fun insertArticle(article: Article) : Long
 
-    @Query("SELECT * FROM ARTICLES ORDER BY publishedAt")
-    fun getSavedArticles() : Flow<List<Article>>
+    @Query("SELECT * FROM ARTICLES WHERE isSaved=:isSaved ORDER BY publishedAt")
+    fun getSavedArticles(isSaved : Boolean = true) : Flow<List<Article>>
 
     @Delete
     suspend fun deleteArticle(article: Article)
@@ -26,6 +22,8 @@ interface NewsDao {
     @Query("DELETE FROM ARTICLES")
     suspend fun deleteAllArticles()
 
-    @Query("SELECT * FROM ARTICLES WHERE url=:url")
-    fun getSavedArticlesByURL(url : String) : List<Article>
+    @Query("SELECT * FROM ARTICLES WHERE url=:url AND isSaved=:isSaved")
+    fun getSavedArticlesByURL(url : String , isSaved: Boolean = true) : List<Article>
+
+
 }
