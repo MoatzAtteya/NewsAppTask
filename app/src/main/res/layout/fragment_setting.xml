@@ -19,6 +19,19 @@
         android:layout_margin="@dimen/_10sdp"/>
 
     <TextView
+        android:id="@+id/tvChangeFavCategory"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/change"
+        android:textSize="@dimen/_14sdp"
+        android:fontFamily="@font/open_sans_semibold"
+        android:textColor="@color/purple_500"
+        android:foreground="?selectableItemBackground"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_margin="@dimen/_12sdp"/>
+
+    <TextView
         android:id="@+id/tvTitleSelectedCountry"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -28,7 +41,8 @@
         android:textColor="?colorOnSecondary"
         app:layout_constraintTop_toBottomOf="@+id/tvTitleSetting"
         app:layout_constraintStart_toStartOf="parent"
-        android:layout_margin="@dimen/_10sdp"/>
+        android:layout_marginTop="@dimen/_20sdp"
+        android:layout_marginStart="@dimen/_10sdp"/>
 
     <TextView
         android:id="@+id/tvSelectedCountry"
@@ -40,7 +54,8 @@
         android:textColor="?colorOnSecondary"
         app:layout_constraintTop_toBottomOf="@+id/tvTitleSetting"
         app:layout_constraintEnd_toEndOf="parent"
-        android:layout_margin="@dimen/_10sdp"/>
+        android:layout_marginTop="@dimen/_20sdp"
+        android:layout_marginEnd="@dimen/_10sdp"/>
 
     <TextView
         android:id="@+id/tvTitleFavCategory"
@@ -52,19 +67,10 @@
         android:textColor="?colorOnSecondary"
         app:layout_constraintTop_toBottomOf="@+id/tvTitleSelectedCountry"
         app:layout_constraintStart_toStartOf="parent"
-        android:layout_margin="@dimen/_10sdp"/>
+        android:layout_marginTop="@dimen/_20sdp"
+        android:layout_marginStart="@dimen/_10sdp"/>
 
-    <TextView
-        android:id="@+id/tvViewFavCategory"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="View"
-        android:textSize="@dimen/_14sdp"
-        android:fontFamily="@font/open_sans_semibold"
-        android:textColor="@color/purple_500"
-        app:layout_constraintTop_toBottomOf="@+id/tvTitleSelectedCountry"
-        app:layout_constraintEnd_toEndOf="parent"
-        android:layout_margin="@dimen/_10sdp"/>
+
 
     <TextView
         android:id="@+id/tvFavCategory"
@@ -76,8 +82,9 @@
         android:textColor="?colorOnSecondary"
         app:layout_constraintTop_toBottomOf="@+id/tvTitleFavCategory"
         app:layout_constraintStart_toStartOf="parent"
-        android:layout_margin="@dimen/_10sdp"
-        android:visibility="gone"/>
+        android:layout_marginTop="@dimen/_15sdp"
+        android:layout_marginStart="@dimen/_10sdp"
+        android:visibility="visible"/>
 
 
 

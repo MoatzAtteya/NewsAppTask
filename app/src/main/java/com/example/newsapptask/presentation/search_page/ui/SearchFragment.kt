@@ -5,23 +5,20 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.widget.SearchView
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.example.newsapptask.common.Constants
 import com.example.newsapptask.common.Resource
 import com.example.newsapptask.databinding.FragmentSearchBinding
 import com.example.newsapptask.domain.model.Article
-import com.example.newsapptask.presentation.news_page.adapter.CategoryNewsAdapter
-import com.example.newsapptask.presentation.news_page.ui.NewsFragment
 import com.example.newsapptask.presentation.search_page.adapter.SearchedNewsAdapter
 import com.example.newsapptask.presentation.search_page.viewmodel.SearchViewModel
 import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.*
-import kotlinx.coroutines.flow.collect
 
 @AndroidEntryPoint
 class SearchFragment : Fragment(), SearchView.OnQueryTextListener {
@@ -30,6 +27,10 @@ class SearchFragment : Fragment(), SearchView.OnQueryTextListener {
     private lateinit var searchViewModel: SearchViewModel
     private lateinit var searchNewsAdapter: SearchedNewsAdapter
     private var articleID: Long = 0
+    private var isFilterClicked = false
+    private lateinit var favouriteCategories: MutableSet<String>
+    private var searchCategory = mutableSetOf<String>()
+
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -39,40 +40,79 @@ class SearchFragment : Fragment(), SearchView.OnQueryTextListener {
         searchViewModel = ViewModelProvider(this)[SearchViewModel::class.java]
 
         binding = FragmentSearchBinding.inflate(inflater, container, false)
+        favouriteCategories = searchViewModel.getPreferencesCategories()!!
         setUpSearchNewsRv()
+        setUpCategorySpinner()
 
         binding.svNewsSearch.setOnQueryTextListener(this)
 
+        binding.tvChangeSearchCategory.setOnClickListener {
+            if (!isFilterClicked) {
+                binding.categorySpinner.visibility = View.VISIBLE
+                binding.tvResetSearchCategory.visibility = View.VISIBLE
+                isFilterClicked = true
+            } else {
+                binding.categorySpinner.visibility = View.GONE
+                binding.tvResetSearchCategory.visibility = View.GONE
+                isFilterClicked = false
+
+            }
+        }
+
+        binding.tvResetSearchCategory.setOnClickListener {
+            searchCategory.clear()
+            favouriteCategories = searchViewModel.getPreferencesCategories()!!
+            Toast.makeText(requireContext(), "Search category reset.", Toast.LENGTH_SHORT)
+                .show()
+        }
 
         return binding.root
     }
 
+    private fun setUpCategorySpinner() {
+        binding.categorySpinner.apply {
+            setItems(Constants.categories)
+            setOnItemSelectedListener { view, position, id, item ->
+                searchCategory.clear()
+                searchCategory.add(item.toString())
+                Toast.makeText(requireContext(), "Search category set to $item", Toast.LENGTH_SHORT)
+                    .show()
+            }
+        }
+    }
+
     override fun onQueryTextSubmit(query: String?): Boolean {
         GlobalScope.launch(Dispatchers.IO) {
-            if (!query.isNullOrEmpty()) {
-                searchViewModel.getAndReturnNews(favouriteCategories, query)
-                searchViewModel.getNewsResponse.collect { response ->
-                    when (response) {
-                        is Resource.Error -> {
-                            withContext(Dispatchers.Main) {
-                                binding.progressBar.visibility = View.GONE
-                                Log.e(TAG, response.message!!)
-                                Toast.makeText(
-                                    requireContext(),
-                                    response.message,
-                                    Toast.LENGTH_SHORT
-                                ).show()
-                            }
+            if(searchCategory.isNotEmpty()){
+                searchViewModel.getAndReturnNews(searchCategory, query!!)
+            }else{
+                searchViewModel.getAndReturnNews(favouriteCategories, query!!)
+            }
+            searchViewModel.getNewsResponse.collect { response ->
+                when (response) {
+                    is Resource.Error -> {
+                        withContext(Dispatchers.Main) {
+                            binding.progressBar.visibility = View.GONE
+                            Log.e(TAG, response.message!!)
+                            Toast.makeText(
+                                requireContext(),
+                                response.message,
+                                Toast.LENGTH_SHORT
+                            ).show()
                         }
-                        is Resource.Loading -> {
-                            withContext(Dispatchers.Main){
-                                binding.progressBar.visibility = View.VISIBLE
-                            }
+                    }
+                    is Resource.Loading -> {
+                        withContext(Dispatchers.Main) {
+                            binding.progressBar.visibility = View.VISIBLE
                         }
-                        is Resource.Success -> {
-                            Log.d(TAG, "search news size: ${response.data!!.size}")
-                            withContext(Dispatchers.Main) {
-                                binding.progressBar.visibility = View.GONE
+                    }
+                    is Resource.Success -> {
+                        withContext(Dispatchers.Main) {
+                            binding.progressBar.visibility = View.GONE
+                            if (response.data!!.isEmpty()) {
+                                binding.tvNoResultFound.visibility = View.VISIBLE
+                            } else {
+                                binding.tvNoResultFound.visibility = View.GONE
                                 searchNewsAdapter.setArticlesList(mutableListOf())
                                 searchNewsAdapter.setArticlesList(response.data as MutableList<Article>)
                                 searchNewsAdapter.notifyDataSetChanged()
@@ -80,9 +120,6 @@ class SearchFragment : Fragment(), SearchView.OnQueryTextListener {
                         }
                     }
                 }
-            }else{
-                searchNewsAdapter.setArticlesList(mutableListOf())
-                searchNewsAdapter.notifyDataSetChanged()
             }
         }
         return false
@@ -142,7 +179,6 @@ class SearchFragment : Fragment(), SearchView.OnQueryTextListener {
     }
 
     companion object {
-        var favouriteCategories = arrayListOf("sport", "health", "science")
         private const val TAG = "SearchFragment"
     }
 }

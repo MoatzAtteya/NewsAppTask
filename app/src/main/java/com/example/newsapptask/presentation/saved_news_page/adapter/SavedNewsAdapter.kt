@@ -1,6 +1,7 @@
 package com.example.newsapptask.presentation.saved_news_page.adapter
 
 import android.content.Intent
+import android.net.Uri
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -43,6 +44,10 @@ class SavedNewsAdapter(private val fragment: SavedNewsFragment) :
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
         val article = differ.currentList[position]
         if (holder is SavedNewsViewHolder){
+            holder.itemView.setOnClickListener {
+                val intent = Intent(Intent.ACTION_VIEW, Uri.parse(article.url))
+                fragment.startActivity(intent)
+            }
             holder.binding.apply {
                 Glide.with(fragment.requireContext())
                     .load(article.urlToImage).error(R.drawable.breaking_news_img)
@@ -62,7 +67,6 @@ class SavedNewsAdapter(private val fragment: SavedNewsFragment) :
                     val shareIntent = Intent.createChooser(intent , "Share Article")
                     fragment.requireContext().startActivity(shareIntent)
                 }
-
             }
         }
     }

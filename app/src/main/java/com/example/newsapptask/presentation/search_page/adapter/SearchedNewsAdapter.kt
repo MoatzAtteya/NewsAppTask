@@ -1,6 +1,7 @@
 package com.example.newsapptask.presentation.search_page.adapter
 
 import android.content.Intent
+import android.net.Uri
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -44,6 +45,10 @@ class SearchedNewsAdapter(private val fragment: SearchFragment) :
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
         val article = articles[position]
         if (holder is CategoryNewsViewHolder) {
+            holder.itemView.setOnClickListener {
+                val intent = Intent(Intent.ACTION_VIEW, Uri.parse(article.url))
+                fragment.startActivity(intent)
+            }
             holder.binding.apply {
                 Glide.with(fragment.requireContext())
                     .load(article.urlToImage).error(R.drawable.breaking_news_img)

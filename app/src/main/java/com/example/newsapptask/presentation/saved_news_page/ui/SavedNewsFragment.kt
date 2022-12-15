@@ -5,8 +5,6 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.TextView
-import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.ItemTouchHelper
@@ -15,22 +13,19 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.newsapptask.common.Resource
 import com.example.newsapptask.databinding.FragmentSavedNewsBinding
 import com.example.newsapptask.domain.model.Article
-import com.example.newsapptask.presentation.news_page.adapter.CategoryNewsAdapter
 import com.example.newsapptask.presentation.saved_news_page.adapter.SavedNewsAdapter
 import com.example.newsapptask.presentation.saved_news_page.viewmodel.SavedNewsViewModel
 import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
 @AndroidEntryPoint
 class SavedNewsFragment : Fragment() {
 
-    private var _binding: FragmentSavedNewsBinding? = null
-    private val binding get() = _binding!!
+    private lateinit var binding: FragmentSavedNewsBinding
     private lateinit var savedNewsViewModel: SavedNewsViewModel
     private lateinit var savedNewsAdapter: SavedNewsAdapter
     private lateinit var article: Article
@@ -44,7 +39,7 @@ class SavedNewsFragment : Fragment() {
         savedNewsViewModel =
             ViewModelProvider(this).get(SavedNewsViewModel::class.java)
 
-        _binding = FragmentSavedNewsBinding.inflate(inflater, container, false)
+        binding = FragmentSavedNewsBinding.inflate(inflater, container, false)
         setUpRecyclerView()
 
         GlobalScope.launch(Dispatchers.IO) {
@@ -57,8 +52,13 @@ class SavedNewsFragment : Fragment() {
                     is Resource.Loading -> {}
                     is Resource.Success -> {
                         withContext(Dispatchers.Main) {
-                            articles = (response.data as MutableList<Article>?)!!
-                            savedNewsAdapter.differ.submitList(response.data!!.toList())
+                            if (response.data!!.isEmpty()){
+                                binding.tvNoSavedNewsFound.visibility = View.VISIBLE
+                            }else{
+                                binding.tvNoSavedNewsFound.visibility = View.GONE
+                                articles = (response.data as MutableList<Article>?)!!
+                                savedNewsAdapter.differ.submitList(response.data!!.toList())
+                            }
                         }
                     }
                 }
@@ -81,8 +81,6 @@ class SavedNewsFragment : Fragment() {
                 val position = viewHolder.adapterPosition
                 article = savedNewsAdapter.differ.currentList[position]
                 savedNewsViewModel.deleteArticle(article)
-              //  articles.remove(article)
-            //    savedNewsAdapter.differ.submitList(articles)
                 GlobalScope.launch(Dispatchers.Main) {
                     savedNewsViewModel.deleteArticleResponse.collect { response ->
                         when (response) {
@@ -122,11 +120,6 @@ class SavedNewsFragment : Fragment() {
             adapter = savedNewsAdapter
             layoutManager = LinearLayoutManager(requireContext())
         }
-    }
-
-    override fun onDestroyView() {
-        super.onDestroyView()
-        _binding = null
     }
 
     companion object {

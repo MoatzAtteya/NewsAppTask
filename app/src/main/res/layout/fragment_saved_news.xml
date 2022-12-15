@@ -4,6 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:layoutAnimation="@anim/slide_down_layout"
     tools:context=".presentation.saved_news_page.ui.SavedNewsFragment">
 
     <TextView
@@ -23,9 +24,22 @@
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_margin="@dimen/_10sdp"
-        tools:listitem="@layout/saved_news_item"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/text_savedArticles_title"/>
+
+    <TextView
+        android:id="@+id/tvNoSavedNewsFound"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/sorry_no_saved_articles_found"
+        android:fontFamily="@font/open_sans_bold"
+        android:textSize="@dimen/_17sdp"
+        android:textColor="@color/purple_500"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/text_savedArticles_title"
+        android:visibility="gone"/>
 </androidx.constraintlayout.widget.ConstraintLayout>

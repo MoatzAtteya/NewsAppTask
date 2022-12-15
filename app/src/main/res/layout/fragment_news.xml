@@ -4,6 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:layoutAnimation="@anim/scale_up_layout"
     tools:context=".presentation.news_page.ui.NewsFragment">
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -17,7 +18,7 @@
             android:layout_margin="@dimen/_10sdp"
             android:fontFamily="@font/noticia_text"
             android:text="@string/breaking_news"
-            android:textColor="?colorOnSecondary"
+            android:textColor="@color/purple_500"
             android:textSize="@dimen/_19sdp"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
@@ -49,7 +50,7 @@
             android:layout_margin="@dimen/_10sdp"
             android:fontFamily="@font/noticia_text"
             android:text="@string/general_news"
-            android:textColor="?colorOnSecondary"
+            android:textColor="@color/purple_500"
             android:textSize="@dimen/_17sdp"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/breaking_news_rv" />

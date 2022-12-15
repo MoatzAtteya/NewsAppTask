@@ -34,7 +34,6 @@ class NewsFragment : Fragment() {
     private lateinit var breakingNewsAdapter: BreakingNewsAdapter
     private lateinit var categoryNewsAdapter: CategoryNewsAdapter
     private lateinit var newsViewModel: NewsViewModel
-    private lateinit var snackbar: Snackbar
     private var articleID: Long = 0
 
     override fun onCreateView(
@@ -49,11 +48,6 @@ class NewsFragment : Fragment() {
         setUpBreakingNewsRv()
         setUpCategoryNewsRv()
 
-        snackbar = Snackbar.make(
-            requireActivity().findViewById(android.R.id.content),
-            "Article Saved Successfully.",
-            Snackbar.LENGTH_SHORT
-        )
         //var isLoading = false
         //var isLastPage = false
         //var isScrolling = true

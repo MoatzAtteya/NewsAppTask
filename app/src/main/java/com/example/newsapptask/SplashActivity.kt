@@ -14,7 +14,7 @@ class SplashActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_splash)
         supportActionBar!!.hide()
-        val sharedPreferences = getSharedPreferences("Preferences" , Context.MODE_PRIVATE)
+        val sharedPreferences = getSharedPreferences(Constants.SHARED_PREFERENCES_NAME , Context.MODE_PRIVATE)
         val firstTimeOpen = sharedPreferences.getBoolean(Constants.FIRST_TIME_OPEN , true)
 
         AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)

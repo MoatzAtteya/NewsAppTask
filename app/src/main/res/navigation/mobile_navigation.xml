@@ -26,5 +26,14 @@
         android:id="@+id/navigation_setting"
         android:name="com.example.newsapptask.presentation.setting_page.ui.SettingFragment"
         android:label="fragment_setting"
-        tools:layout="@layout/fragment_setting" />
+        tools:layout="@layout/fragment_setting" >
+        <action
+            android:id="@+id/action_navigation_setting_to_onBoardActivity"
+            app:destination="@id/onBoardActivity" />
+    </fragment>
+    <activity
+        android:id="@+id/onBoardActivity"
+        android:name="com.example.newsapptask.presentation.first_time_page.ui.OnBoardActivity"
+        android:label="activity_on_board"
+        tools:layout="@layout/activity_on_board" />
 </navigation>

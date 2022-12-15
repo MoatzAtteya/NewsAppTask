@@ -6,6 +6,8 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
+import androidx.navigation.fragment.findNavController
+import com.example.newsapptask.R
 import com.example.newsapptask.databinding.FragmentSettingBinding
 import com.example.newsapptask.presentation.setting_page.viewmodel.SettingViewModel
 import dagger.hilt.android.AndroidEntryPoint
@@ -23,7 +25,19 @@ class SettingFragment : Fragment() {
     ): View? {
         viewModel = ViewModelProvider(this)[SettingViewModel::class.java]
         binding = FragmentSettingBinding.inflate(inflater, container, false)
+
+         updateUI()
+
+        binding.tvChangeFavCategory.setOnClickListener {
+            findNavController().navigate(R.id.action_navigation_setting_to_onBoardActivity)
+        }
+
         return binding.root
+    }
+
+    private fun updateUI() {
+        binding.tvSelectedCountry.text = viewModel.getPreferencesCountryName()
+        binding.tvFavCategory.text = viewModel.getPreferencesCategories().toString()
     }
 
 
