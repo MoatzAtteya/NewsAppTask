@@ -1,29 +1,37 @@
 package com.example.newsapptask.domain.use_case
 
-import com.example.newsapptask.common.Resource
-import com.example.newsapptask.domain.model.NewsResponse
-import com.example.newsapptask.domain.repo.NewsRepository
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.flow
-import retrofit2.HttpException
-import java.io.IOException
+import androidx.room.withTransaction
+import com.example.newsapptask.data.remote.NewsDatabase
+import com.example.newsapptask.data.remote.networkBoundResource
+import com.example.newsapptask.data.repo.NewsDBRepositoryImp
+import com.example.newsapptask.data.repo.NewsRepositoryImp
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
-class GetBreakingNewsUseCase @Inject constructor(private val repository: NewsRepository) {
+class GetBreakingNewsUseCase @Inject constructor(
+    private val newsDBRepositoryImp: NewsDBRepositoryImp,
+    private val newsRepositoryImp: NewsRepositoryImp,
+    private val appDatabase: NewsDatabase
+) {
 
-    fun invoke(countryCode: String, pageNumber: Int): Flow<Resource<NewsResponse>> = flow {
-        try {
-            val newsResponse = repository.getBreakingNews(countryCode, pageNumber)
-            if (newsResponse.status == "ok")
-                emit(Resource.Success(newsResponse))
-            else
-                emit(Resource.Error("An unexpected error occurred."))
-
-        } catch (ex: HttpException) {
-            emit(Resource.Error(ex.localizedMessage ?: "An unexpected error occurred."))
-        } catch (ex: IOException) {
-            emit(Resource.Error("Couldn't reach the server. Check your internet connection."))
+    fun invoke(countryCode: String, pageNumber: Int) = networkBoundResource(
+        query = {
+            newsDBRepositoryImp.getCachedArticles()
+        },
+        fetch = {
+            newsRepositoryImp.getBreakingNews(countryCode, pageNumber)
+        },
+        saveFetchResult = { newsResponse ->
+            CoroutineScope(Dispatchers.IO).launch {
+                appDatabase.withTransaction {
+                    newsDBRepositoryImp.deleteAllArticles()
+                    newsDBRepositoryImp.saveCachedArticles(newsResponse.articles)
+                }
+            }
         }
-    }
+    )
 
 }

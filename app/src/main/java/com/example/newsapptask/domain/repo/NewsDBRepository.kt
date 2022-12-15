@@ -13,5 +13,12 @@ interface NewsDBRepository {
 
     suspend fun deleteArticleByIdDB(id: Long)
 
-    suspend fun getSavedArticlesByURL(url : String) : List<Article>
+    suspend fun getSavedArticlesByURL(url: String): List<Article>
+
+    fun getCachedArticles(): Flow<List<Article>>
+
+    suspend fun deleteAllArticles()
+
+    suspend fun saveCachedArticles(articles : List<Article>)
+
 }

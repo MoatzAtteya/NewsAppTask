@@ -59,7 +59,7 @@
             tools:text="2022-12-12"
             android:textSize="@dimen/_13sdp"
             android:textColor="?colorOnSecondary"
-            android:fontFamily="@font/open_sans"
+            android:fontFamily="@font/open_sans_semibold"
             android:layout_marginTop="@dimen/_10sdp"
             android:layout_marginStart="@dimen/_5sdp"
             app:layout_constraintStart_toEndOf="@id/ivPublishedAt"

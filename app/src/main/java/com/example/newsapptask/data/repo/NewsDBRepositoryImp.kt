@@ -23,9 +23,22 @@ class NewsDBRepositoryImp @Inject constructor(val dao : NewsDao) : NewsDBReposit
         return dao.getSavedArticlesByURL(url)
     }
 
+    override  fun getCachedArticles(): Flow<List<Article>> {
+        return dao.getCachedArticles()
+    }
+
+    override suspend fun deleteAllArticles() {
+        dao.deleteAllArticles()
+    }
+
+    override suspend fun saveCachedArticles(articles : List<Article>) {
+        dao.insertCachedArticle(articles)
+    }
+
     override suspend fun getSavedArticles(): Flow<List<Article>> {
         return dao.getSavedArticles()
     }
+
 
 
 }

@@ -82,7 +82,7 @@ class SearchFragment : Fragment(), SearchView.OnQueryTextListener {
     }
 
     override fun onQueryTextSubmit(query: String?): Boolean {
-        GlobalScope.launch(Dispatchers.IO) {
+        CoroutineScope(Dispatchers.IO).launch {
             if (searchCategory.isNotEmpty()) {
                 searchViewModel.getAndReturnNews(searchCategory, query!!)
             } else {
@@ -137,7 +137,7 @@ class SearchFragment : Fragment(), SearchView.OnQueryTextListener {
         }
         searchNewsAdapter.setOnItemClickListener(object : SearchedNewsAdapter.OnItemClickListener {
             override fun onLikeClicked(position: Int, article: Article) {
-                GlobalScope.launch(Dispatchers.IO) {
+                CoroutineScope(Dispatchers.IO).launch {
                     searchViewModel.saveArticle(article)
                     searchViewModel.saveArticleResponse.collect { response ->
                         when (response) {

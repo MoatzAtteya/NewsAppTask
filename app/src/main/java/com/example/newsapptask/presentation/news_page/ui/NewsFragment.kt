@@ -8,11 +8,8 @@ import android.view.ViewGroup
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
-import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import androidx.recyclerview.widget.RecyclerView.LayoutManager
-import com.example.newsapptask.common.Constants.QUERY_PAGE_SIZE
 import com.example.newsapptask.common.Resource
 import com.example.newsapptask.databinding.FragmentNewsBinding
 import com.example.newsapptask.domain.model.Article
@@ -21,12 +18,10 @@ import com.example.newsapptask.presentation.news_page.adapter.CategoryNewsAdapte
 import com.example.newsapptask.presentation.news_page.viewmodel.NewsViewModel
 import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import kotlin.math.roundToInt
 
 @AndroidEntryPoint
 class NewsFragment : Fragment() {
@@ -48,42 +43,22 @@ class NewsFragment : Fragment() {
         setUpBreakingNewsRv()
         setUpCategoryNewsRv()
 
-        //var isLoading = false
-        //var isLastPage = false
-        //var isScrolling = true
+        newsViewModel.articles.observe(viewLifecycleOwner){response->
+            breakingNewsAdapter.differ.submitList(response.data!!)
+            if (response is Resource.Error)
+                Toast.makeText(requireContext(), "offline mode, Showing cached data.", Toast.LENGTH_SHORT)
+                    .show()
 
-        GlobalScope.launch(Dispatchers.IO) {
-            newsViewModel.getNewsResponse.collect { response ->
-                when (response) {
-                    is Resource.Error -> {
-                        Log.e(TAG, response.message!!)
-                        withContext(Dispatchers.Main) {
-                            Toast.makeText(requireContext(), response.message, Toast.LENGTH_SHORT)
-                                .show()
-                        }
-                    }
-                    is Resource.Loading -> {}
-                    is Resource.Success -> {
-                        //  val totalPages = (response.data!!.totalResults / QUERY_PAGE_SIZE + 2).toFloat().roundToInt()
-                        //  isLastPage = newsViewModel.breakingNewsPage == totalPages
-                        //  Log.d(TAG,"news are: ${response.data}")
-                        withContext(Dispatchers.Main) {
-                            breakingNewsAdapter.differ.submitList(response.data!!.articles.toList())
-                        }
-                    }
-                }
-            }
         }
 
-        GlobalScope.launch(Dispatchers.IO) {
+        CoroutineScope(Dispatchers.IO).launch {
             newsViewModel.getCategoryNewsResponse.collect { response ->
                 when (response) {
                     is Resource.Error -> {
                         Log.e(TAG, response.message!!)
                         withContext(Dispatchers.Main) {
                             binding.progressBar.visibility = View.GONE
-                            Toast.makeText(requireContext(), response.message, Toast.LENGTH_SHORT)
-                                .show()
+
                         }
                     }
                     is Resource.Loading -> {
@@ -119,7 +94,7 @@ class NewsFragment : Fragment() {
         breakingNewsAdapter.setOnItemClickListener(object :
             BreakingNewsAdapter.OnItemClickListener {
             override fun onLikeClicked(position: Int, article: Article) {
-                GlobalScope.launch(Dispatchers.IO) {
+                CoroutineScope(Dispatchers.IO).launch {
                     newsViewModel.saveArticle(article)
                     newsViewModel.saveArticleResponse.collect { response ->
                         when (response) {
@@ -162,7 +137,7 @@ class NewsFragment : Fragment() {
         categoryNewsAdapter.setOnItemClickListener(object :
             CategoryNewsAdapter.OnItemClickListener {
             override fun onLikeClicked(position: Int, article: Article) {
-                GlobalScope.launch(Dispatchers.IO) {
+                CoroutineScope(Dispatchers.IO).launch {
                     newsViewModel.saveArticle(article)
                     newsViewModel.saveArticleResponse.collect { response ->
                         when (response) {
@@ -185,7 +160,8 @@ class NewsFragment : Fragment() {
                                     createSnackBar("Article Saved Successfully.").setAction("Undo") {
                                         createSnackBar("Article removed successfully.").show()
                                         article.id = articleID.toInt()
-                                        newsViewModel.deleteArticle(article)                                    }.show()
+                                        newsViewModel.deleteArticle(article)
+                                    }.show()
                                 }
                             }
                         }

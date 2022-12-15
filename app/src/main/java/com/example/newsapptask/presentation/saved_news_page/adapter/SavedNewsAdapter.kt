@@ -56,7 +56,7 @@ class SavedNewsAdapter(private val fragment: SavedNewsFragment) :
                 tvArticleTitle.text = article.title
                 tvAuthor.text = article.source?.name
                 tvDescription.text = article.title
-                tvDatePublished.text = article.publishedAt
+                tvDatePublished.text = article.publishedAt?.replace("T", " ")?.replace("Z"," ")
 
                 shareIv.setOnClickListener {
                     val intent = Intent().apply {

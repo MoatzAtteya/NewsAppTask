@@ -18,10 +18,7 @@ import com.example.newsapptask.presentation.saved_news_page.adapter.SavedNewsAda
 import com.example.newsapptask.presentation.saved_news_page.viewmodel.SavedNewsViewModel
 import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
+import kotlinx.coroutines.*
 
 @AndroidEntryPoint
 class SavedNewsFragment : Fragment() {
@@ -78,7 +75,7 @@ class SavedNewsFragment : Fragment() {
                 val position = viewHolder.adapterPosition
                 article = savedNewsAdapter.differ.currentList[position]
                 savedNewsViewModel.deleteArticle(article)
-                GlobalScope.launch(Dispatchers.Main) {
+                CoroutineScope(Dispatchers.Main).launch {
                     savedNewsViewModel.deleteArticleResponse.collect { response ->
                         when (response) {
                             is Resource.Error -> Log.e(TAG, response.message!!)

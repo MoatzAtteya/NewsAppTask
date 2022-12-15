@@ -66,7 +66,7 @@ class CategoryNewsAdapter(private val fragment: NewsFragment) :
                 tvArticleTitle.text = article.title
                 tvAuthor.text = article.source?.name
                 tvDescription.text = article.title
-                tvDatePublished.text = article.publishedAt
+                tvDatePublished.text = article.publishedAt?.replace("T", " ")?.replace("Z"," ")
 
                 likeIv.setOnClickListener {
                     mListener.onLikeClicked(position, article)

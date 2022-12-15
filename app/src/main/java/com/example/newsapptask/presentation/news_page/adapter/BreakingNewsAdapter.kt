@@ -66,7 +66,7 @@ class BreakingNewsAdapter(private val fragment: NewsFragment) :
 
                 tvSource.text = article.source?.name
                 tvDescription.text = article.title
-                tvPublishedAt.text = article.publishedAt
+                tvPublishedAt.text = article.publishedAt?.replace("T", " ")?.replace("Z"," ")
 
                 shareIv.setOnClickListener {
                     val intent = Intent().apply {
@@ -80,8 +80,6 @@ class BreakingNewsAdapter(private val fragment: NewsFragment) :
 
                 likeIv.setOnClickListener {
                     mListener.onLikeClicked(position, article)
-
-
                 }
             }
         }
@@ -90,7 +88,6 @@ class BreakingNewsAdapter(private val fragment: NewsFragment) :
     override fun getItemCount(): Int {
         return differ.currentList.size
     }
-
 
     private class BreakingNewsViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         val binding = BreakingNewsItemBinding.bind(view)
