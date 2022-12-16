@@ -10,10 +10,7 @@
 * if the category news is not loading or error HTTP429 in search page this means that we need to change the API key or wait 12 hours.
 
 # Screenshots:
-<img src="Screenshots/change-setting-page.png" >
-<img src="Screenshots/Main-page.png" >
-<img src="Screenshots/saved-articles-page.png" >
-<img src="Screenshots/search_page.png" >
+<img src="Screenshots/change-setting-page.png" width="200" height="400" > <img src="Screenshots/Main-page.png" width="200" height="400" > <img src="Screenshots/saved-articles-page.png" width="200" height="400" > <img src="Screenshots/search_page.png" width="200" height="400" >
 
 
 # Technologies & Open-source libraries
