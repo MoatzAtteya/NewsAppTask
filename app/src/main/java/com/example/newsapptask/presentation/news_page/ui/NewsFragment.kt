@@ -58,6 +58,7 @@ class NewsFragment : Fragment() {
                         Log.e(TAG, response.message!!)
                         withContext(Dispatchers.Main) {
                             binding.shimmerEffect.stopShimmer()
+                            binding.shimmerEffect.visibility = View.GONE
                             Toast.makeText(requireContext(), response.message, Toast.LENGTH_SHORT)
                                 .show()
                         }
@@ -68,6 +69,7 @@ class NewsFragment : Fragment() {
                         withContext(Dispatchers.Main) {
                             delay(1000)
                             binding.shimmerEffect.stopShimmer()
+                            binding.shimmerEffect.visibility = View.GONE
                             binding.categoryNewsRv.visibility = View.VISIBLE
                             categoryNewsAdapter.differ.submitList(response.data.toList())
                         }

@@ -4,6 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:layoutAnimation="@anim/scale_up_layout"
     tools:context=".presentation.news_page.ui.NewsFragment">
 
     <androidx.constraintlayout.widget.ConstraintLayout
