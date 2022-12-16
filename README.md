@@ -14,7 +14,7 @@
 	* Lifecycle
 	* ViewModel
 	* ViewBinding
-  * Room DB 
+  	* Room DB 
 	* Navigation Component
 * [SDP](https://github.com/intuit/sdp) to support different screen sizes.
 * [Glide](https://github.com/bumptech/glide) very easy library to load images or thumnails.
