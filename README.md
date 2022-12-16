@@ -4,6 +4,17 @@
 * User can search for article and select search category.
 * User can share and save any article to view it later.
 * User can see breaking news even if there is no internet connection.
+* App support en/ar languages.
+
+# Important note:
+* if the category news is not loading or error HTTP429 in search page this means that we need to change the API key or wait 12 hours.
+
+# Screenshots:
+<img src="Screenshots/change-setting-page.png" >
+<img src="Screenshots/Main-page.png" >
+<img src="Screenshots/saved-articles-page.png" >
+<img src="Screenshots/search_page.png" >
+
 
 # Technologies & Open-source libraries
 * Kotlin mainly, Coroutines together with Flow.
