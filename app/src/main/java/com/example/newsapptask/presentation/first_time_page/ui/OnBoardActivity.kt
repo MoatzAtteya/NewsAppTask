@@ -87,6 +87,11 @@ class OnBoardActivity : AppCompatActivity() {
                 countryName = country.name
                 countryCode = country.code
                 binding.tvSelectCountry.text = country.name
+                Toast.makeText(
+                    this@OnBoardActivity,
+                    "Country $countryName selected.",
+                    Toast.LENGTH_SHORT
+                ).show()
             }
         })
     }

@@ -43,12 +43,19 @@ class NewsViewModel @Inject constructor(
     var breakingNewsPage = 1
     private var country = sharedPreferences.getString(Constants.COUNTRY_CODE, "")
 
+    /*
+     This variable will be the cached data if the no internet or the incoming data is the same.
+     or it will be the incoming api data.
+     */
+
     val articles = getBreakingNewsUseCase.invoke(country!!, breakingNewsPage).asLiveData()
 
-
+    //We have 3 favourite categories, so for each category call getCategoryNews().
     private var count = 3
+    //getting stored category value.
     private var favouriteCategories =
         sharedPreferences.getStringSet(Constants.CATEGORIES, mutableSetOf())
+    //Add each category articles to this list, in the end emit the whole data.
     private var categoryArticles: MutableList<Article> = mutableListOf()
 
     init {

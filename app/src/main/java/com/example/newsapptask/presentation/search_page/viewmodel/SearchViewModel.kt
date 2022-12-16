@@ -33,6 +33,11 @@ class SearchViewModel @Inject constructor(
 
 
     private var count = 0
+
+    /*
+        The default search category are 3 categories.
+        Add each category articles to this list, in the end emit the whole data.
+     */
     private var searchArticles: MutableList<Article> = mutableListOf()
 
     private val sharedPreferences = application.getSharedPreferences(

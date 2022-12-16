@@ -5,6 +5,8 @@ import kotlinx.coroutines.flow.Flow
 
 interface NewsDBRepository {
 
+    // This interface has all functions makes operations on our database.
+
     suspend fun saveArticleDB(article: Article): Long
 
     suspend fun deleteArticleDB(article: Article)

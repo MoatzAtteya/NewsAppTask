@@ -18,10 +18,7 @@ import com.example.newsapptask.presentation.news_page.adapter.CategoryNewsAdapte
 import com.example.newsapptask.presentation.news_page.viewmodel.NewsViewModel
 import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
+import kotlinx.coroutines.*
 
 @AndroidEntryPoint
 class NewsFragment : Fragment() {
@@ -37,16 +34,19 @@ class NewsFragment : Fragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-
         binding = FragmentNewsBinding.inflate(inflater, container, false)
 
         setUpBreakingNewsRv()
         setUpCategoryNewsRv()
 
-        newsViewModel.articles.observe(viewLifecycleOwner){response->
+        newsViewModel.articles.observe(viewLifecycleOwner) { response ->
             breakingNewsAdapter.differ.submitList(response.data!!)
             if (response is Resource.Error)
-                Toast.makeText(requireContext(), "offline mode, Showing cached data.", Toast.LENGTH_SHORT)
+                Toast.makeText(
+                    requireContext(),
+                    "offline mode, Showing cached data.",
+                    Toast.LENGTH_SHORT
+                )
                     .show()
 
         }
@@ -57,19 +57,18 @@ class NewsFragment : Fragment() {
                     is Resource.Error -> {
                         Log.e(TAG, response.message!!)
                         withContext(Dispatchers.Main) {
-                            binding.progressBar.visibility = View.GONE
-
+                            binding.shimmerEffect.stopShimmer()
+                            Toast.makeText(requireContext(), response.message, Toast.LENGTH_SHORT)
+                                .show()
                         }
                     }
-                    is Resource.Loading -> {
-                        withContext(Dispatchers.Main){
-                            binding.progressBar.visibility = View.VISIBLE
-                        }
-                    }
+                    is Resource.Loading -> {}
                     is Resource.Success -> {
                         Log.d(TAG, "category news are: ${response.data!!.size}")
                         withContext(Dispatchers.Main) {
-                            binding.progressBar.visibility = View.GONE
+                            delay(1000)
+                            binding.shimmerEffect.stopShimmer()
+                            binding.categoryNewsRv.visibility = View.VISIBLE
                             categoryNewsAdapter.differ.submitList(response.data.toList())
                         }
                     }
@@ -130,6 +129,7 @@ class NewsFragment : Fragment() {
 
     private fun setUpCategoryNewsRv() {
         categoryNewsAdapter = CategoryNewsAdapter(this)
+        binding.shimmerEffect.startShimmer()
         binding.categoryNewsRv.apply {
             adapter = categoryNewsAdapter
             layoutManager = LinearLayoutManager(requireContext())

@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">NewsAppTask</string>
+    <string name="title_home">الصفحة الرئيسية</string>
+    <string name="title_dashboard">Dashboard</string>
+    <string name="title_notifications">Notification</string>
+    <string name="breaking_news">الأاخبار العاجلة</string>
+    <string name="general_news">قد يعجبك</string>
+    <string name="search">بحث</string>
+    <string name="saved">محفوظات</string>
+    <string name="saved_articles">مقالات محفوظة</string>
+    <string name="setting">الاعدادات</string>
+    <string name="selected_country">البلد المختارة</string>
+    <string name="favourite_categories">الأقسام المفضلة</string>
+    <string name="breaking_news_title">this is title one for the first breaking news article item to test the width of the textview</string>
+    <string name="author_name">www.google.com</string>
+    <string name="news_title">news title 1</string>
+    <string name="title_activity_on_board">OnBoardActivity</string>
+    <string name="first_fragment_label">First Fragment</string>
+    <string name="second_fragment_label">Second Fragment</string>
+    <string name="next">التالي</string>
+    <string name="previous">السابق</string>
+    <string name="welcome_please_select_the_following">مرحبا أختر من التالي</string>
+    <string name="select_your_country">أختر بلدك</string>
+    <string name="view">عرض</string>
+    <string name="select_your_categories">اختر الأقسام:</string>
+    <string name="selected_categories">الأقسام المختارة:</string>
+    <string name="clear">مسح كلي</string>
+    <string name="save">حفظ</string>
+    <string name="change">تغيير</string>
+    <string name="reset">إعادة ضبط</string>
+    <string name="sorry_no_results_found">عفوا لا يوجد نتائج</string>
+    <string name="sorry_no_saved_articles_found">عفوا لا يوجد مقالات محفوظة</string>
+</resources>

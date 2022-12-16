@@ -32,7 +32,8 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:scaleType="centerCrop"
-                android:src="@drawable/breaking_news_img"/>
+                android:background="@color/shimmer_color"
+                />
         </androidx.cardview.widget.CardView>
 
         <TextView
@@ -44,8 +45,7 @@
             android:fontFamily="@font/open_sans_bold"
             android:maxLines="1"
             android:ellipsize="end"
-            tools:text="@string/news_title"
-            android:textColor="?colorOnSecondary"
+            android:background="@color/shimmer_color"
             android:textSize="@dimen/_12sdp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@+id/cvArticleImage"
@@ -59,8 +59,7 @@
             android:fontFamily="@font/open_sans_semibold"
             android:maxLines="3"
             android:ellipsize="end"
-            android:textColor="?colorOnSecondary"
-            tools:text="@string/breaking_news_title"
+            android:background="@color/shimmer_color"
             android:textSize="@dimen/_13sdp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@+id/cvArticleImage"
@@ -71,38 +70,38 @@
             android:layout_width="17dp"
             android:layout_height="17dp"
             android:layout_marginStart="10dp"
-            android:src="@drawable/calendar_clock_24"
             app:layout_constraintStart_toEndOf="@+id/cvArticleImage"
             app:layout_constraintTop_toTopOf="@+id/tvDatePublished"
-            app:tint="?colorOnSecondary" />
+            android:background="@color/shimmer_color"
+            />
 
         <TextView
             android:id="@+id/tvDatePublished"
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="10dp"
             android:layout_marginTop="10dp"
             android:fontFamily="@font/noticia_text"
             android:gravity="bottom"
             android:maxLines="3"
-            tools:text="2022-12-22"
-            android:textColor="?colorOnSecondary"
+            android:background="@color/shimmer_color"
             android:textSize="@dimen/_11sdp"
+            app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@+id/imageView"
             app:layout_constraintTop_toBottomOf="@+id/tvDescription" />
 
         <TextView
             android:id="@+id/tvAuthor"
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:fontFamily="@font/noticia_text"
             android:gravity="bottom"
             android:maxLines="3"
             android:layout_marginTop="10dp"
             android:layout_marginStart="10dp"
-            tools:text="@string/author_name"
-            android:textColor="?colorOnSecondary"
+            android:background="@color/shimmer_color"
             android:textSize="14sp"
+            app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@+id/cvArticleImage"
             app:layout_constraintTop_toBottomOf="@+id/tvDatePublished" />
 
@@ -110,24 +109,24 @@
             android:id="@+id/like_iv"
             android:layout_width="@dimen/_20sdp"
             android:layout_height="@dimen/_20sdp"
-            android:src="@drawable/heart_24"
+           android:background="@color/shimmer_color"
             android:foreground="?selectableItemBackground"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/tvAuthor"
-            app:tint="?colorOnSecondary" />
+             />
 
         <ImageView
             android:id="@+id/share_iv"
             android:layout_width="@dimen/_20sdp"
             android:layout_height="@dimen/_20sdp"
-            android:src="@drawable/share_24"
+            android:background="@color/shimmer_color"
             android:layout_marginEnd="@dimen/_10sdp"
             android:foreground="?selectableItemBackground"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toStartOf="@+id/like_iv"
             app:layout_constraintTop_toBottomOf="@+id/tvAuthor"
-            app:tint="?colorOnSecondary"/>
+            />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </androidx.cardview.widget.CardView>
