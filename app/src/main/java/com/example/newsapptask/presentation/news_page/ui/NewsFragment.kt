@@ -40,7 +40,7 @@ class NewsFragment : Fragment() {
         setUpCategoryNewsRv()
 
         newsViewModel.articles.observe(viewLifecycleOwner) { response ->
-            breakingNewsAdapter.differ.submitList(response.data!!)
+            breakingNewsAdapter.differ.submitList(response.data!!.distinctBy { it.url })
             if (response is Resource.Error)
                 Toast.makeText(
                     requireContext(),
@@ -59,8 +59,6 @@ class NewsFragment : Fragment() {
                         withContext(Dispatchers.Main) {
                             binding.shimmerEffect.stopShimmer()
                             binding.shimmerEffect.visibility = View.GONE
-                            Toast.makeText(requireContext(), response.message, Toast.LENGTH_SHORT)
-                                .show()
                         }
                     }
                     is Resource.Loading -> {}
