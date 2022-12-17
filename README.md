@@ -12,6 +12,7 @@
 # Screenshots:
 <img src="Screenshots/change-setting-page.png" width="200" height="400" > <img src="Screenshots/Main-page.png" width="200" height="400" > <img src="Screenshots/saved-articles-page.png" width="200" height="400" > <img src="Screenshots/search_page.png" width="200" height="400" >
 
+https://user-images.githubusercontent.com/86920482/208246970-e8517b30-2799-4013-9b95-61c89a837005.mp4
 
 # Technologies & Open-source libraries
 * Kotlin mainly, Coroutines together with Flow.
