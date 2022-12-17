@@ -14,6 +14,7 @@ import com.example.newsapptask.domain.use_case.GetBreakingNewsUseCase
 import com.example.newsapptask.domain.use_case.GetCategoryNewsUseCase
 import com.example.newsapptask.domain.use_case.SaveArticleUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -50,23 +51,34 @@ class NewsViewModel @Inject constructor(
 
     val articles = getBreakingNewsUseCase.invoke(country!!, breakingNewsPage).asLiveData()
 
-    //We have 3 favourite categories, so for each category call getCategoryNews().
-    private var count = 3
+
     //getting stored category value.
     private var favouriteCategories =
-        sharedPreferences.getStringSet(Constants.CATEGORIES, mutableSetOf())
+        sharedPreferences.getStringSet(Constants.CATEGORIES, mutableSetOf())!!.toList()
+
     //Add each category articles to this list, in the end emit the whole data.
     private var categoryArticles: MutableList<Article> = mutableListOf()
 
     init {
-       getAndReturnCategoryNews()
+        getAndReturnCategoryNews()
     }
 
 
+    /*
+        Instead of looping on the category list 3 times to call getCategoryNews(),
+        and then emit the total articles.
+        we call getCategoryNews() 3 time in parallel to reduce the time, then emit the total articles.
+     */
     private fun getAndReturnCategoryNews() = viewModelScope.launch {
-        for (category in favouriteCategories!!) {
-            getCategoryNews(category)
-        }
+        val job1 = async { getCategoryNews(favouriteCategories[0]) }
+        val job2 = async { getCategoryNews(favouriteCategories[1]) }
+        val job3 = async { getCategoryNews(favouriteCategories[2]) }
+        job1.await()
+        job2.await()
+        job3.await()
+        _getCategoryNewsResponse.value =
+            Resource.Success(categoryArticles.sortedByDescending { it.publishedAt })
+
     }
 
     private suspend fun getCategoryNews(category: String) {
@@ -80,9 +92,6 @@ class NewsViewModel @Inject constructor(
                 }
                 is Resource.Success -> {
                     categoryArticles.addAll(response.data!!.articles)
-                    count--
-                    if (count == 0)
-                        _getCategoryNewsResponse.value = Resource.Success(categoryArticles)
                 }
             }
         }

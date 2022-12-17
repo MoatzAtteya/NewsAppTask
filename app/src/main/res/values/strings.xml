@@ -32,4 +32,23 @@
     <string name="reset">Reset</string>
     <string name="sorry_no_results_found">Sorry! No results found:(</string>
     <string name="sorry_no_saved_articles_found">Sorry! No saved articles found :(</string>
+
+    <!-- Strings used for Toasts and snackBar -->
+    <string name="max_category_error_msg">Maximum category number is 3</string>
+    <string name="select_category_error_msg">Please select 3 categories</string>
+    <string name="select_country_error_msg">Please select a country</string>
+    <string name="preferences_saved_msg">Preferences Saved.</string>
+    <string name="selected_country_info_msg">Country %1$s selected.</string>
+    <string name="offline_mode_info_msg">offline mode, Showing cached data.</string>
+    <string name="sorted_articles_info_msg">Sorted by published dated.</string>
+    <string name="somthing_wrong_error_msg">Something wrong happen!</string>
+    <string name="article_already_saved_msg">Article already saved before!</string>
+    <string name="article_saved_msg">Article Saved Successfully.</string>
+    <string name="article_removed_msg">Article removed successfully.</string>
+    <string name="undo_msg">Undo</string>
+    <string name="search_category_reset_msg">Search category reset.</string>
+    <string name="search_category_set_msg">Search category set to %1$s </string>
+
+
+
 </resources>

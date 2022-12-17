@@ -4,13 +4,15 @@ import com.example.newsapptask.R
 import com.example.newsapptask.domain.model.Country
 
 object Constants {
-    const val API_KEY = "c4fa77bdcc744730be880257df0ceecc"
+    const val API_KEY = "52d3fa789172412e879de5eb559bf489"
     const val BASE_URL = "https://newsapi.org"
     const val FIRST_TIME_OPEN = "first_time_open"
     const val COUNTRY_NAME = "country_name"
     const val COUNTRY_CODE = "country_code"
     const val CATEGORIES = "categories"
     const val SHARED_PREFERENCES_NAME = "Preferences"
+    const val BREAKING_NEWS_VIEWTYPE = 0
+    const val CATEGORY_NEWS_VIEWTYPE = 1
 
     val countries = arrayListOf<Country>(
         Country(R.drawable.icons8_egypt_96, "EGY", "eg"),

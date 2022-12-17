@@ -12,6 +12,8 @@ import com.example.newsapptask.domain.use_case.DeleteArticleUseCase
 import com.example.newsapptask.domain.use_case.SaveArticleUseCase
 import com.example.newsapptask.domain.use_case.SearchArticleUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.async
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -50,22 +52,36 @@ class SearchViewModel @Inject constructor(
         viewModelScope.launch {
             count = categories.size
             searchArticles.clear()
-            for (category in categories) {
-                searchArticles(category, searchText)
+            /*
+                - if the count is 3 which means that the user is searching
+                  with his favourite categories -> call searchArticles() 3 times with different
+                  category in parallel.
+                - if the count is 1 this means that the user select 1 category from the spinner.
+             */
+            if (count > 1){
+                val job1 = async { searchArticles(categories.toList()[0],searchText) }
+                val job2 = async { searchArticles(categories.toList()[1],searchText) }
+                val job3 = async { searchArticles(categories.toList()[2],searchText) }
+                job1.await()
+                job2.await()
+                job3.await()
+                delay(1000)
+                _getNewsResponse.value = Resource.Success(searchArticles)
+            }else{
+                searchArticles(categories.toList()[0],searchText)
+                delay(1000)
+                _getNewsResponse.value = Resource.Success(searchArticles)
             }
+
         }
 
-    fun searchArticles(category: String, searchText: String) = viewModelScope.launch {
+    private fun searchArticles(category: String, searchText: String) = viewModelScope.launch {
         searchArticleUseCase.invoke(searchText, 1, category).collect { response ->
             when (response) {
                 is Resource.Error -> _getNewsResponse.value = Resource.Error(response.message!!)
                 is Resource.Loading -> _getNewsResponse.value = Resource.Loading()
                 is Resource.Success -> {
-                    count--
                     searchArticles.addAll(response.data!!.articles)
-                    if (count == 0) {
-                        _getNewsResponse.value = Resource.Success(searchArticles)
-                    }
                 }
             }
         }

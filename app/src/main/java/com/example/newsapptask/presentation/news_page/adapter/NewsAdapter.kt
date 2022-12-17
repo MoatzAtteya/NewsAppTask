@@ -10,12 +10,15 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.example.newsapptask.R
+import com.example.newsapptask.common.Constants.BREAKING_NEWS_VIEWTYPE
+import com.example.newsapptask.databinding.BreakingNewsItemBinding
 import com.example.newsapptask.databinding.CategoryNewsItemBinding
 import com.example.newsapptask.domain.model.Article
 import com.example.newsapptask.presentation.news_page.ui.NewsFragment
 
-class CategoryNewsAdapter(private val fragment: NewsFragment) :
+class NewsAdapter(private val fragment: NewsFragment) :
     RecyclerView.Adapter<RecyclerView.ViewHolder>() {
+
 
     private val differCallback = object : DiffUtil.ItemCallback<Article>() {
         override fun areItemsTheSame(oldItem: Article, newItem: Article): Boolean {
@@ -26,12 +29,11 @@ class CategoryNewsAdapter(private val fragment: NewsFragment) :
             return oldItem == newItem
         }
     }
-
     val differ = AsyncListDiffer(this, differCallback)
+
 
     interface OnItemClickListener {
         fun onLikeClicked(position: Int, article: Article)
-
     }
 
     private lateinit var mListener: OnItemClickListener
@@ -40,20 +42,62 @@ class CategoryNewsAdapter(private val fragment: NewsFragment) :
         mListener = listener
     }
 
-
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
-        return CategoryNewsViewHolder(
-            LayoutInflater.from(parent.context).inflate(
-                R.layout.category_news_item,
-                parent,
-                false
-            )
-        )
+        when (viewType) {
+            BREAKING_NEWS_VIEWTYPE -> {
+                return BreakingNewsViewHolder(
+                    LayoutInflater.from(parent.context).inflate(
+                        R.layout.breaking_news_item,
+                        parent,
+                        false
+                    )
+                )
+            }
+            else -> {
+                return CategoryNewsViewHolder(
+                    LayoutInflater.from(parent.context).inflate(
+                        R.layout.category_news_item,
+                        parent,
+                        false
+                    )
+                )
+            }
+        }
     }
 
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
         val article = differ.currentList[position]
-        if (holder is CategoryNewsViewHolder) {
+        if (holder is BreakingNewsViewHolder) {
+            holder.itemView.setOnClickListener {
+                val intent = Intent(Intent.ACTION_VIEW, Uri.parse(article.url))
+                fragment.startActivity(intent)
+            }
+            holder.binding.apply {
+                Glide.with(fragment.requireContext())
+                    .load(article.urlToImage)
+                    .error(R.drawable.breaking_news_img)
+                    .placeholder(R.drawable.breaking_news_img)
+                    .into(ivArticleImage)
+
+                tvSource.text = article.source?.name
+                tvDescription.text = article.title
+                tvPublishedAt.text = article.publishedAt?.replace("T", " ")?.replace("Z", " ")
+
+                shareIv.setOnClickListener {
+                    val intent = Intent().apply {
+                        type = "text/plain"
+                        action = Intent.ACTION_SEND
+                        putExtra(Intent.EXTRA_TEXT, article.url)
+                    }
+                    val shareIntent = Intent.createChooser(intent, "Share Article")
+                    fragment.requireContext().startActivity(shareIntent)
+                }
+
+                likeIv.setOnClickListener {
+                    mListener.onLikeClicked(position, article)
+                }
+            }
+        } else if(holder is CategoryNewsViewHolder){
             holder.itemView.setOnClickListener {
                 val intent = Intent(Intent.ACTION_VIEW, Uri.parse(article.url))
                 fragment.startActivity(intent)
@@ -88,6 +132,13 @@ class CategoryNewsAdapter(private val fragment: NewsFragment) :
         return differ.currentList.size
     }
 
+    override fun getItemViewType(position: Int): Int {
+        return differ.currentList[position].viewType
+    }
+
+    private class BreakingNewsViewHolder(view: View) : RecyclerView.ViewHolder(view) {
+        val binding = BreakingNewsItemBinding.bind(view)
+    }
     private class CategoryNewsViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         val binding = CategoryNewsItemBinding.bind(view)
     }

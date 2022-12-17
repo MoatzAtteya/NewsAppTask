@@ -10,22 +10,27 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.example.newsapptask.R
+import com.example.newsapptask.common.Constants
 import com.example.newsapptask.common.Resource
 import com.example.newsapptask.databinding.FragmentNewsBinding
 import com.example.newsapptask.domain.model.Article
-import com.example.newsapptask.presentation.news_page.adapter.BreakingNewsAdapter
-import com.example.newsapptask.presentation.news_page.adapter.CategoryNewsAdapter
+import com.example.newsapptask.presentation.news_page.adapter.NewsAdapter
 import com.example.newsapptask.presentation.news_page.viewmodel.NewsViewModel
 import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.*
 
 @AndroidEntryPoint
-class NewsFragment : Fragment() {
+class NewsFragment : Fragment(), View.OnClickListener {
 
     private lateinit var binding: FragmentNewsBinding
-    private lateinit var breakingNewsAdapter: BreakingNewsAdapter
-    private lateinit var categoryNewsAdapter: CategoryNewsAdapter
+    /*
+        We have 2 rv for breaking news - category news with different properties,
+        so we have 2 objects from the same Adapter and attach each one to its rv.
+     */
+    private lateinit var breakingNewsAdapter: NewsAdapter
+    private lateinit var categoryNewsAdapter: NewsAdapter
     private val newsViewModel: NewsViewModel by viewModels()
     private var articleID: Long = 0
 
@@ -39,18 +44,17 @@ class NewsFragment : Fragment() {
         setUpBreakingNewsRv()
         setUpCategoryNewsRv()
 
-        newsViewModel.articles.observe(viewLifecycleOwner) { response ->
-            breakingNewsAdapter.differ.submitList(response.data!!.distinctBy { it.url })
-            if (response is Resource.Error)
-                Toast.makeText(
-                    requireContext(),
-                    "offline mode, Showing cached data.",
-                    Toast.LENGTH_SHORT
-                )
-                    .show()
+        //Breaking news articles based on selected country.
+        getBreakingNewsArticles()
+        //Category news articles based on selected country and category.
+        getCategoryNewsArticles()
 
-        }
+        binding.ivSortBy.setOnClickListener(this)
 
+        return binding.root
+    }
+
+    private fun getCategoryNewsArticles() {
         CoroutineScope(Dispatchers.IO).launch {
             newsViewModel.getCategoryNewsResponse.collect { response ->
                 when (response) {
@@ -63,35 +67,46 @@ class NewsFragment : Fragment() {
                     }
                     is Resource.Loading -> {}
                     is Resource.Success -> {
-                        Log.d(TAG, "category news are: ${response.data!!.size}")
                         withContext(Dispatchers.Main) {
-                            delay(1000)
                             binding.shimmerEffect.stopShimmer()
                             binding.shimmerEffect.visibility = View.GONE
                             binding.categoryNewsRv.visibility = View.VISIBLE
-                            categoryNewsAdapter.differ.submitList(response.data.toList())
+                            categoryNewsAdapter.differ.submitList(changeArticlesViewType(response.data!!))
                         }
                     }
                 }
             }
         }
+    }
 
-        binding.ivSortBy.setOnClickListener {
-            Toast.makeText(requireContext(), "Sorted by published dated.", Toast.LENGTH_SHORT)
-                .show()
+    // changing the articles adapter viewType before sending it to the adapter.
+    private fun changeArticlesViewType(data: List<Article>): List<Article> {
+        data.forEach { it.viewType = Constants.CATEGORY_NEWS_VIEWTYPE }
+        return data
+    }
+
+    private fun getBreakingNewsArticles() {
+        newsViewModel.articles.observe(viewLifecycleOwner) { response ->
+            breakingNewsAdapter.differ.submitList(response.data!!.distinctBy { it.url })
+            if (response is Resource.Error)
+                Toast.makeText(
+                    requireContext(),
+                    getString(R.string.offline_mode_info_msg),
+                    Toast.LENGTH_SHORT
+                )
+                    .show()
+
         }
-
-        return binding.root
     }
 
     private fun setUpBreakingNewsRv() {
-        breakingNewsAdapter = BreakingNewsAdapter(this)
+        breakingNewsAdapter = NewsAdapter(this)
         binding.breakingNewsRv.apply {
             adapter = breakingNewsAdapter
             layoutManager = LinearLayoutManager(activity, RecyclerView.HORIZONTAL, false)
         }
         breakingNewsAdapter.setOnItemClickListener(object :
-            BreakingNewsAdapter.OnItemClickListener {
+            NewsAdapter.OnItemClickListener {
             override fun onLikeClicked(position: Int, article: Article) {
                 CoroutineScope(Dispatchers.IO).launch {
                     newsViewModel.saveArticle(article)
@@ -102,7 +117,7 @@ class NewsFragment : Fragment() {
                                 withContext(Dispatchers.Main) {
                                     Toast.makeText(
                                         requireContext(),
-                                        "Something wrong happen!",
+                                        getString(R.string.somthing_wrong_error_msg),
                                         Toast.LENGTH_SHORT
                                     ).show()
                                 }
@@ -111,10 +126,12 @@ class NewsFragment : Fragment() {
                             is Resource.Success -> {
                                 articleID = response.data!!
                                 if (articleID == -1L) {
-                                    createSnackBar("Article already saved before!").show()
+                                    createSnackBar(getString(R.string.article_already_saved_msg)).show()
                                 } else {
-                                    createSnackBar("Article Saved Successfully.").setAction("Undo") {
-                                        createSnackBar("Article removed successfully.").show()
+                                    createSnackBar(getString(R.string.article_saved_msg)).setAction(
+                                        getString(R.string.undo_msg)
+                                    ) {
+                                        createSnackBar(getString(R.string.article_removed_msg)).show()
                                         article.id = articleID.toInt()
                                         newsViewModel.deleteArticle(article)
                                     }.show()
@@ -128,14 +145,14 @@ class NewsFragment : Fragment() {
     }
 
     private fun setUpCategoryNewsRv() {
-        categoryNewsAdapter = CategoryNewsAdapter(this)
+        categoryNewsAdapter = NewsAdapter(this)
         binding.shimmerEffect.startShimmer()
         binding.categoryNewsRv.apply {
             adapter = categoryNewsAdapter
             layoutManager = LinearLayoutManager(requireContext())
         }
         categoryNewsAdapter.setOnItemClickListener(object :
-            CategoryNewsAdapter.OnItemClickListener {
+            NewsAdapter.OnItemClickListener {
             override fun onLikeClicked(position: Int, article: Article) {
                 CoroutineScope(Dispatchers.IO).launch {
                     newsViewModel.saveArticle(article)
@@ -146,7 +163,7 @@ class NewsFragment : Fragment() {
                                 withContext(Dispatchers.Main) {
                                     Toast.makeText(
                                         requireContext(),
-                                        "Something wrong happen!",
+                                        getString(R.string.somthing_wrong_error_msg),
                                         Toast.LENGTH_SHORT
                                     ).show()
                                 }
@@ -155,10 +172,12 @@ class NewsFragment : Fragment() {
                             is Resource.Success -> {
                                 articleID = response.data!!
                                 if (articleID == -1L) {
-                                    createSnackBar("Article already saved before!").show()
+                                    createSnackBar(getString(R.string.article_already_saved_msg)).show()
                                 } else {
-                                    createSnackBar("Article Saved Successfully.").setAction("Undo") {
-                                        createSnackBar("Article removed successfully.").show()
+                                    createSnackBar(getString(R.string.article_saved_msg)).setAction(
+                                        getString(R.string.undo_msg)
+                                    ) {
+                                        createSnackBar(getString(R.string.article_removed_msg)).show()
                                         article.id = articleID.toInt()
                                         newsViewModel.deleteArticle(article)
                                     }.show()
@@ -168,7 +187,6 @@ class NewsFragment : Fragment() {
                     }
                 }
             }
-
         })
     }
 
@@ -182,5 +200,18 @@ class NewsFragment : Fragment() {
 
     companion object {
         private const val TAG = "NewsFragment"
+    }
+
+    override fun onClick(v: View?) {
+        when (v!!.id) {
+            R.id.ivSortBy -> {
+                Toast.makeText(
+                    requireContext(),
+                    getString(R.string.sorted_articles_info_msg),
+                    Toast.LENGTH_SHORT
+                )
+                    .show()
+            }
+        }
     }
 }

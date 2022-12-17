@@ -7,10 +7,10 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
-import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.example.newsapptask.R
 import com.example.newsapptask.common.Resource
 import com.example.newsapptask.databinding.FragmentSavedNewsBinding
 import com.example.newsapptask.domain.model.Article
@@ -18,7 +18,10 @@ import com.example.newsapptask.presentation.saved_news_page.adapter.SavedNewsAda
 import com.example.newsapptask.presentation.saved_news_page.viewmodel.SavedNewsViewModel
 import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.*
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 @AndroidEntryPoint
 class SavedNewsFragment : Fragment() {
@@ -36,29 +39,17 @@ class SavedNewsFragment : Fragment() {
     ): View {
         binding = FragmentSavedNewsBinding.inflate(inflater, container, false)
         setUpRecyclerView()
-        GlobalScope.launch(Dispatchers.IO) {
-            savedNewsViewModel.getSavedArticles()
-            savedNewsViewModel.getSavedNewsResponse.collect { response ->
-                when (response) {
-                    is Resource.Error -> {
-                        Log.e(TAG, response.message!!)
-                    }
-                    is Resource.Loading -> {}
-                    is Resource.Success -> {
-                        withContext(Dispatchers.Main) {
-                            if (response.data!!.isEmpty()){
-                                binding.tvNoSavedNewsFound.visibility = View.VISIBLE
-                            }else{
-                                binding.tvNoSavedNewsFound.visibility = View.GONE
-                                articles = (response.data as MutableList<Article>?)!!
-                                savedNewsAdapter.differ.submitList(response.data!!.toList())
-                            }
-                        }
-                    }
-                }
-            }
-        }
 
+        //getting the saved news from the database.
+        getSavedDBArticles()
+
+        //handling right and left swipes on articles for deleting.
+        handleSwipeArticleListener()
+
+        return binding.root
+    }
+
+    private fun handleSwipeArticleListener() {
         val itemTouchHelperCallback = object : ItemTouchHelper.SimpleCallback(
             ItemTouchHelper.UP or ItemTouchHelper.DOWN,
             ItemTouchHelper.LEFT or ItemTouchHelper.RIGHT
@@ -85,10 +76,10 @@ class SavedNewsFragment : Fragment() {
                                 try {
                                     Snackbar.make(
                                         requireActivity().findViewById(android.R.id.content),
-                                        "Successfully deleted article",
+                                        getString(R.string.article_removed_msg),
                                         Snackbar.LENGTH_LONG
                                     ).apply {
-                                        setAction("Undo") {
+                                        setAction(getString(R.string.undo_msg)) {
                                             article.isSaved = true
                                             savedNewsViewModel.saveArticle(article)
                                         }
@@ -106,8 +97,32 @@ class SavedNewsFragment : Fragment() {
         ItemTouchHelper(itemTouchHelperCallback).apply {
             attachToRecyclerView(binding.rvSavedNews)
         }
+    }
 
-        return binding.root
+    private fun getSavedDBArticles() {
+        CoroutineScope(Dispatchers.IO).launch {
+            savedNewsViewModel.getSavedArticles()
+            savedNewsViewModel.getSavedNewsResponse.collect { response ->
+                when (response) {
+                    is Resource.Error -> {
+                        Log.e(TAG, response.message!!)
+                    }
+                    is Resource.Loading -> {}
+                    is Resource.Success -> {
+                        withContext(Dispatchers.Main) {
+                            if (response.data!!.isEmpty()){
+                                binding.tvNoSavedNewsFound.visibility = View.VISIBLE
+                            }else{
+                                binding.tvNoSavedNewsFound.visibility = View.GONE
+                                articles = (response.data as MutableList<Article>?)!!
+                                savedNewsAdapter.differ.submitList(response.data.toList())
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
     }
 
     private fun setUpRecyclerView() {

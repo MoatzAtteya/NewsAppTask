@@ -4,7 +4,7 @@
     <string name="title_home">الصفحة الرئيسية</string>
     <string name="title_dashboard">Dashboard</string>
     <string name="title_notifications">Notification</string>
-    <string name="breaking_news">الأاخبار العاجلة</string>
+    <string name="breaking_news">الأخبار العاجلة</string>
     <string name="general_news">قد يعجبك</string>
     <string name="search">بحث</string>
     <string name="saved">محفوظات</string>
@@ -29,6 +29,25 @@
     <string name="save">حفظ</string>
     <string name="change">تغيير</string>
     <string name="reset">إعادة ضبط</string>
+
+    <!-- Strings used for Toasts and snackBar -->
     <string name="sorry_no_results_found">عفوا لا يوجد نتائج</string>
     <string name="sorry_no_saved_articles_found">عفوا لا يوجد مقالات محفوظة</string>
+    <string name="max_category_error_msg">"أقصى عدد للأقسام هو 3 "</string>
+    <string name="select_category_error_msg">يجب إختيار 3 أقسام</string>
+    <string name="select_country_error_msg">يجب إختيار بلد</string>
+    <string name="preferences_saved_msg">تم حفظ الإعدادات</string>
+    <string name="selected_country_info_msg">%1$s تم اختيار</string>
+
+    <string name="offline_mode_info_msg">لا يوجد إنترنت يتم عرض البيانات المسجلة</string>
+    <string name="sorted_articles_info_msg">العناصر مرتبة بتاريخ الإصدار</string>
+    <string name="somthing_wrong_error_msg">شي خطأ حدث!</string>
+    <string name="article_already_saved_msg">هذا المقال محفوظ مسبقا</string>
+    <string name="article_saved_msg">تم حفظ المقال</string>
+    <string name="article_removed_msg">تم حذف المقال</string>
+    <string name="undo_msg">الرجوع</string>
+    <string name="search_category_reset_msg">تم إعادة ضبط الأأقسام</string>
+    <string name="search_category_set_msg">تم إختيار قسم %1$s </string>
+
+
 </resources>

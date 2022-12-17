@@ -9,21 +9,23 @@ import android.widget.Toast
 import androidx.appcompat.widget.SearchView
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
-import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.example.newsapptask.R
 import com.example.newsapptask.common.Constants
 import com.example.newsapptask.common.Resource
 import com.example.newsapptask.databinding.FragmentSearchBinding
 import com.example.newsapptask.domain.model.Article
-import com.example.newsapptask.presentation.saved_news_page.ui.SavedNewsFragment
 import com.example.newsapptask.presentation.search_page.adapter.SearchedNewsAdapter
 import com.example.newsapptask.presentation.search_page.viewmodel.SearchViewModel
 import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.*
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 @AndroidEntryPoint
-class SearchFragment : Fragment(), SearchView.OnQueryTextListener {
+class SearchFragment : Fragment(), SearchView.OnQueryTextListener, View.OnClickListener {
 
     private lateinit var binding: FragmentSearchBinding
     private val searchViewModel: SearchViewModel by viewModels()
@@ -46,25 +48,9 @@ class SearchFragment : Fragment(), SearchView.OnQueryTextListener {
 
         binding.svNewsSearch.setOnQueryTextListener(this)
 
-        binding.tvChangeSearchCategory.setOnClickListener {
-            if (!isFilterClicked) {
-                binding.categorySpinner.visibility = View.VISIBLE
-                binding.tvResetSearchCategory.visibility = View.VISIBLE
-                isFilterClicked = true
-            } else {
-                binding.categorySpinner.visibility = View.GONE
-                binding.tvResetSearchCategory.visibility = View.GONE
-                isFilterClicked = false
+        binding.tvChangeSearchCategory.setOnClickListener(this)
+        binding.tvResetSearchCategory.setOnClickListener(this)
 
-            }
-        }
-
-        binding.tvResetSearchCategory.setOnClickListener {
-            searchCategory.clear()
-            favouriteCategories = searchViewModel.getPreferencesCategories()!!
-            Toast.makeText(requireContext(), "Search category reset.", Toast.LENGTH_SHORT)
-                .show()
-        }
 
         return binding.root
     }
@@ -75,7 +61,11 @@ class SearchFragment : Fragment(), SearchView.OnQueryTextListener {
             setOnItemSelectedListener { view, position, id, item ->
                 searchCategory.clear()
                 searchCategory.add(item.toString())
-                Toast.makeText(requireContext(), "Search category set to $item", Toast.LENGTH_SHORT)
+                Toast.makeText(
+                    requireContext(),
+                    getString(R.string.search_category_set_msg, item.toString()),
+                    Toast.LENGTH_SHORT
+                )
                     .show()
             }
         }
@@ -146,7 +136,7 @@ class SearchFragment : Fragment(), SearchView.OnQueryTextListener {
                                 withContext(Dispatchers.Main) {
                                     Toast.makeText(
                                         requireContext(),
-                                        "Something wrong happen!",
+                                        getString(R.string.somthing_wrong_error_msg),
                                         Toast.LENGTH_SHORT
                                     ).show()
                                 }
@@ -157,15 +147,17 @@ class SearchFragment : Fragment(), SearchView.OnQueryTextListener {
                                 if (articleID == -1L) {
                                     // try and catch for not attached Exception.
                                     try {
-                                        createSnackBar("Article already saved before!").show()
+                                        createSnackBar(getString(R.string.article_already_saved_msg)).show()
                                     } catch (ex: Exception) {
                                         Log.e(TAG, ex.message.toString())
                                     }
                                 } else {
                                     // try and catch for not attached Exception.
                                     try {
-                                        createSnackBar("Article Saved Successfully.").setAction("Undo") {
-                                            createSnackBar("Article removed successfully.").show()
+                                        createSnackBar(getString(R.string.article_saved_msg)).setAction(
+                                            getString(R.string.undo_msg)
+                                        ) {
+                                            createSnackBar(getString(R.string.article_removed_msg)).show()
                                             article.id = articleID.toInt()
                                             searchViewModel.deleteArticle(article)
                                         }.show()
@@ -191,5 +183,32 @@ class SearchFragment : Fragment(), SearchView.OnQueryTextListener {
 
     companion object {
         private const val TAG = "SearchFragment"
+    }
+
+    override fun onClick(v: View?) {
+        when(v!!.id){
+            R.id.tvChangeSearchCategory->{
+                if (!isFilterClicked) {
+                    binding.categorySpinner.visibility = View.VISIBLE
+                    binding.tvResetSearchCategory.visibility = View.VISIBLE
+                    isFilterClicked = true
+                } else {
+                    binding.categorySpinner.visibility = View.GONE
+                    binding.tvResetSearchCategory.visibility = View.GONE
+                    isFilterClicked = false
+
+                }
+            }
+            R.id.tvResetSearchCategory->{
+                searchCategory.clear()
+                favouriteCategories = searchViewModel.getPreferencesCategories()!!
+                Toast.makeText(
+                    requireContext(),
+                    getString(R.string.search_category_reset_msg),
+                    Toast.LENGTH_SHORT
+                )
+                    .show()
+            }
+        }
     }
 }
